@@ -1,0 +1,47 @@
+body {
+    background-color: #000000; /* Черный фон */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Центрируем контент по высоте окна */
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Блок с фразами */
+#phrase-container {
+    font-size: 28px;
+    color: #87CEFA; /* Светло-голубой текст */
+    padding: 30px;
+    border: 2px solid #00BFFF; /* Голубая рамка */
+    border-radius: 15px;
+    background-color: rgba(135, 206, 250, 0.1); /* Полупрозрачный фон */
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.7); /* Синее свечение вокруг */
+    max-width: 80%;
+    z-index: 2;
+}
+
+/* Переливающиеся линии */
+@keyframes neon-glow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #000000, #000066, #4B0082, #8A2BE2);
+    background-size: 300% 300%;
+    animation: neon-glow 8s infinite ease-in-out;
+    opacity: 0.3;
+    z-index: 1;
+}
