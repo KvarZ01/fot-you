@@ -3,169 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Calzen — Трекер с ИИ</title>
+    <title>Calzen — Трекер калорий</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <!-- Firebase SDK для Google/Apple авторизации -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 </head>
 <body>
     <div class="app">
         <!-- Шапка с шестерёнкой -->
         <div class="app-header">
             <div class="logo-area">
-                <span class="logo-icon">💧</span>
+                <span class="logo-icon">🔥</span>
                 <span class="logo-text">Calzen</span>
             </div>
-            <div class="header-actions">
-                <div class="user-avatar" id="userAvatar" onclick="openProfileModal()">
-                    <span id="avatarInitials">👤</span>
-                </div>
-                <div class="settings-icon" onclick="openSettingsModal()">⚙️</div>
-            </div>
+            <div class="settings-icon" onclick="openSettingsModal()">⚙️</div>
         </div>
 
         <!-- Основной контент -->
         <div class="content">
-            <!-- Вкладка: Дашборд -->
-            <div id="dashboard" class="tab-page active">
-                <div class="greeting">
-                    <h1>Привет, <span id="userNameDisplay">Гость</span> 👋</h1>
-                    <p id="todayDate"></p>
-                </div>
-
-                <!-- Кольцевой прогресс воды -->
-                <div class="water-ring-container">
-                    <div class="water-ring">
-                        <svg width="180" height="180" viewBox="0 0 180 180">
-                            <circle cx="90" cy="90" r="80" fill="none" stroke="#1c1c1e" stroke-width="12"/>
-                            <circle id="waterRingProgress" cx="90" cy="90" r="80" fill="none" stroke="#0a84ff" stroke-width="12" stroke-dasharray="502.4" stroke-dashoffset="502.4" stroke-linecap="round" transform="rotate(-90 90 90)"/>
-                        </svg>
-                        <div class="water-ring-text">
-                            <div class="water-percent" id="waterPercent">0%</div>
-                            <div class="water-amount"><span id="todayWater">0</span> / <span id="waterGoal">2000</span> мл</div>
-                        </div>
+            <!-- КОЛЬЦО КАЛОРИЙ (ГЛАВНОЕ) -->
+            <div class="calorie-ring-container">
+                <div class="calorie-ring">
+                    <svg width="220" height="220" viewBox="0 0 220 220">
+                        <circle cx="110" cy="110" r="95" fill="none" stroke="#1c1c1e" stroke-width="14"/>
+                        <circle id="calorieRingProgress" cx="110" cy="110" r="95" fill="none" stroke="#ff3b30" stroke-width="14" stroke-dasharray="596.9" stroke-dashoffset="596.9" stroke-linecap="round" transform="rotate(-90 110 110)"/>
+                    </svg>
+                    <div class="calorie-ring-text">
+                        <div class="calorie-current" id="calorieCurrent">0</div>
+                        <div class="calorie-target">/ <span id="calorieTarget">2500</span></div>
+                        <div class="calorie-label">калорий</div>
                     </div>
-                </div>
-
-                <!-- Карточки статистики -->
-                <div class="stats-row">
-                    <div class="stat-card">
-                        <div class="stat-icon">🔥</div>
-                        <div class="stat-info">
-                            <div class="stat-value" id="todayCalories">0</div>
-                            <div class="stat-label">ккал</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">⚡</div>
-                        <div class="stat-info">
-                            <div class="stat-value" id="streakDays">0</div>
-                            <div class="stat-label">дней подряд</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- БЖУ строка -->
-                <div class="macros-row">
-                    <div class="macro-item">
-                        <span class="macro-value" id="todayProtein">0</span>
-                        <span class="macro-label">Белки</span>
-                    </div>
-                    <div class="macro-item">
-                        <span class="macro-value" id="todayFats">0</span>
-                        <span class="macro-label">Жиры</span>
-                    </div>
-                    <div class="macro-item">
-                        <span class="macro-value" id="todayCarbs">0</span>
-                        <span class="macro-label">Углеводы</span>
-                    </div>
-                </div>
-
-                <!-- ИИ анализ еды -->
-                <div class="ai-section">
-                    <div class="section-header">
-                        <span>🤖 ИИ анализ еды</span>
-                        <span class="ai-badge">Gemini AI</span>
-                    </div>
-                    <div class="ai-upload">
-                        <input type="file" id="aiPhotoInput" accept="image/*" capture="environment">
-                        <button onclick="analyzeFoodWithAI()">📸 Распознать по фото</button>
-                    </div>
-                    <div id="aiResult" class="ai-result hidden"></div>
-                </div>
-
-                <!-- Приёмы пищи кратко -->
-                <div class="recent-meals">
-                    <div class="section-header">
-                        <span>🍽️ Сегодня</span>
-                        <button class="add-quick-btn" data-tab="food">+ Добавить</button>
-                    </div>
-                    <div id="recentMealsList"></div>
                 </div>
             </div>
 
-            <!-- Вкладка: Вода -->
-            <div id="water" class="tab-page">
-                <div class="page-header">
-                    <h2>💧 Вода</h2>
-                </div>
-                <div class="water-progress-card">
-                    <div class="progress-value">
-                        <span id="waterAmountDetail">0</span>
-                        <span>мл из <span id="waterTargetDetail">2000</span> мл</span>
+            <!-- БЖУ ПОЛОСКИ -->
+            <div class="macros-container">
+                <div class="macro-row-item">
+                    <div class="macro-header">
+                        <span class="macro-icon">🥩</span>
+                        <span class="macro-name">Белки</span>
+                        <span class="macro-values"><span id="proteinCurrent">0</span> / <span id="proteinTarget">150</span> г</span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="waterProgressFillDetail" style="width: 0%"></div>
+                    <div class="macro-bar">
+                        <div class="macro-fill protein-fill" id="proteinFill" style="width: 0%"></div>
                     </div>
                 </div>
-                <div class="water-buttons-grid">
-                    <button class="water-btn" onclick="addWater(50)">50 мл</button>
-                    <button class="water-btn" onclick="addWater(100)">100 мл</button>
-                    <button class="water-btn" onclick="addWater(150)">150 мл</button>
-                    <button class="water-btn" onclick="addWater(200)">200 мл</button>
-                    <button class="water-btn" onclick="addWater(250)">250 мл</button>
-                    <button class="water-btn" onclick="addWater(500)">500 мл</button>
+                <div class="macro-row-item">
+                    <div class="macro-header">
+                        <span class="macro-icon">🧈</span>
+                        <span class="macro-name">Жиры</span>
+                        <span class="macro-values"><span id="fatsCurrent">0</span> / <span id="fatsTarget">65</span> г</span>
+                    </div>
+                    <div class="macro-bar">
+                        <div class="macro-fill fats-fill" id="fatsFill" style="width: 0%"></div>
+                    </div>
                 </div>
-                <div class="custom-input">
-                    <input type="number" id="customWater" placeholder="Своё значение (мл)">
-                    <button onclick="addWater(parseInt(document.getElementById('customWater').value))">Добавить</button>
-                </div>
-                <div class="history-section">
-                    <h3>История</h3>
-                    <div id="waterHistoryList"></div>
+                <div class="macro-row-item">
+                    <div class="macro-header">
+                        <span class="macro-icon">🍚</span>
+                        <span class="macro-name">Углеводы</span>
+                        <span class="macro-values"><span id="carbsCurrent">0</span> / <span id="carbsTarget">250</span> г</span>
+                    </div>
+                    <div class="macro-bar">
+                        <div class="macro-fill carbs-fill" id="carbsFill" style="width: 0%"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Вкладка: Еда -->
-            <div id="food" class="tab-page">
-                <div class="page-header">
-                    <h2>🍽️ Еда</h2>
+            <!-- ВОДА ПОЛОСКА -->
+            <div class="water-container">
+                <div class="water-header">
+                    <span class="water-icon">💧</span>
+                    <span class="water-name">Вода</span>
+                    <span class="water-values"><span id="waterCurrent">0</span> / <span id="waterTarget">2000</span> мл</span>
                 </div>
-                <div class="macros-summary">
-                    <div class="macro-card">
-                        <span class="macro-big" id="foodCalories">0</span>
-                        <span class="macro-big-label">ккал</span>
-                        <div class="macro-sub">из <span id="foodCalGoal">2000</span></div>
-                    </div>
-                    <div class="macro-card">
-                        <span class="macro-big" id="foodProtein">0</span>
-                        <span class="macro-big-label">белок</span>
-                    </div>
-                    <div class="macro-card">
-                        <span class="macro-big" id="foodFats">0</span>
-                        <span class="macro-big-label">жиры</span>
-                    </div>
-                    <div class="macro-card">
-                        <span class="macro-big" id="foodCarbs">0</span>
-                        <span class="macro-big-label">углеводы</span>
-                    </div>
+                <div class="water-bar">
+                    <div class="water-fill" id="waterFill" style="width: 0%"></div>
                 </div>
-                <div class="add-food-form">
+                <div class="water-buttons">
+                    <button class="water-btn-small" onclick="addWater(50)">+50</button>
+                    <button class="water-btn-small" onclick="addWater(100)">+100</button>
+                    <button class="water-btn-small" onclick="addWater(150)">+150</button>
+                    <button class="water-btn-small" onclick="addWater(200)">+200</button>
+                    <button class="water-btn-small" onclick="addWater(250)">+250</button>
+                    <button class="water-btn-small" onclick="addWater(500)">+500</button>
+                </div>
+            </div>
+
+            <!-- КНОПКА ДОБАВЛЕНИЯ ЕДЫ -->
+            <div class="add-food-button">
+                <button class="add-food-main" onclick="openAddFoodModal()">
+                    <span>🍽️</span> Добавить приём пищи
+                </button>
+            </div>
+        </div>
+
+        <!-- КРУГЛАЯ ИИ-КНОПКА ВНИЗУ -->
+        <div class="ai-fab" onclick="openAIModal()">
+            <span class="ai-icon">🤖</span>
+            <span class="ai-label">ИИ</span>
+        </div>
+
+        <!-- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ ЕДЫ -->
+        <div id="addFoodModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🍽️ Добавить еду</h3>
+                    <span class="modal-close" onclick="closeAddFoodModal()">&times;</span>
+                </div>
+                <div class="modal-body">
                     <input type="text" id="foodName" placeholder="Название блюда">
-                    <div class="macro-inputs">
-                        <input type="number" id="foodCal" placeholder="ккал">
+                    <input type="number" id="foodCal" placeholder="Калории">
+                    <div class="macro-inputs-modal">
                         <input type="number" id="foodProt" placeholder="Белки">
                         <input type="number" id="foodFat" placeholder="Жиры">
                         <input type="number" id="foodCarb" placeholder="Углеводы">
@@ -176,206 +124,123 @@
                         <option value="dinner">🍲 Ужин</option>
                         <option value="snack">🍎 Перекус</option>
                     </select>
-                    <button class="add-btn" onclick="addFood()">Добавить</button>
+                    <button class="add-btn-modal" onclick="addFood()">Добавить</button>
                 </div>
-                <div class="meals-list" id="foodList"></div>
-            </div>
-
-            <!-- Вкладка: Вес -->
-            <div id="weight" class="tab-page">
-                <div class="page-header">
-                    <h2>⚖️ Вес</h2>
-                </div>
-                <div class="current-weight-card">
-                    <div class="current-weight-value" id="currentWeightDisplay">—</div>
-                    <div class="current-weight-label">текущий вес</div>
-                </div>
-                <div class="add-weight-form">
-                    <input type="number" id="weightValue" step="0.1" placeholder="Новый вес (кг)">
-                    <button onclick="addWeight()">Записать</button>
-                </div>
-                <div class="weight-chart-container">
-                    <canvas id="weightChart"></canvas>
-                </div>
-                <div class="weight-history" id="weightHistoryList"></div>
-            </div>
-
-            <!-- Вкладка: Тренировки -->
-            <div id="workout" class="tab-page">
-                <div class="page-header">
-                    <h2>🏋️ Тренировки</h2>
-                </div>
-                <div class="workout-stats-row">
-                    <div class="workout-stat">
-                        <span id="totalWorkouts">0</span>
-                        <span>тренировок</span>
-                    </div>
-                    <div class="workout-stat">
-                        <span id="totalMinutes">0</span>
-                        <span>минут</span>
-                    </div>
-                    <div class="workout-stat">
-                        <span id="totalBurned">0</span>
-                        <span>ккал 🔥</span>
-                    </div>
-                </div>
-                <div class="add-workout-form">
-                    <input type="text" id="workoutName" placeholder="Название">
-                    <input type="number" id="workoutMinutes" placeholder="Минуты">
-                    <input type="number" id="workoutCaloriesBurned" placeholder="Сожжено ккал">
-                    <button onclick="addWorkout()">Добавить</button>
-                </div>
-                <div class="workout-list" id="workoutList"></div>
-            </div>
-
-            <!-- Вкладка: Привычки -->
-            <div id="habits" class="tab-page">
-                <div class="page-header">
-                    <h2>✅ Привычки</h2>
-                </div>
-                <div class="add-habit-form">
-                    <input type="text" id="newHabit" placeholder="Новая привычка">
-                    <button onclick="addHabit()">Добавить</button>
-                </div>
-                <div class="habits-list" id="habitsList"></div>
             </div>
         </div>
 
-        <!-- Таб-бар снизу -->
-        <div class="tab-bar">
-            <div class="tab-item active" data-tab="dashboard">
-                <div class="tab-icon">📊</div>
-                <div class="tab-label">Главная</div>
-            </div>
-            <div class="tab-item" data-tab="water">
-                <div class="tab-icon">💧</div>
-                <div class="tab-label">Вода</div>
-            </div>
-            <div class="tab-item" data-tab="food">
-                <div class="tab-icon">🍽️</div>
-                <div class="tab-label">Еда</div>
-            </div>
-            <div class="tab-item" data-tab="weight">
-                <div class="tab-icon">⚖️</div>
-                <div class="tab-label">Вес</div>
-            </div>
-            <div class="tab-item" data-tab="workout">
-                <div class="tab-icon">🏋️</div>
-                <div class="tab-label">Тренир.</div>
-            </div>
-            <div class="tab-item" data-tab="habits">
-                <div class="tab-icon">✅</div>
-                <div class="tab-label">Привычки</div>
+        <!-- МОДАЛЬНОЕ ОКНО ИИ (ВЫБОР ФОТО ИЛИ КАМЕРА) -->
+        <div id="aiModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🤖 ИИ анализ еды</h3>
+                    <span class="modal-close" onclick="closeAIModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="ai-options">
+                        <button class="ai-option-btn" onclick="selectImageFromGallery()">
+                            📸 Выбрать из галереи
+                        </button>
+                        <button class="ai-option-btn" onclick="takePhoto()">
+                            🎥 Сделать фото
+                        </button>
+                    </div>
+                    <div id="aiPreview" class="ai-preview hidden">
+                        <img id="aiPreviewImg" src="">
+                        <button onclick="analyzeFoodWithAI()" class="analyze-btn">🔍 Распознать</button>
+                    </div>
+                    <div id="aiResult" class="ai-result hidden"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК (вес, рост, калории, БЖУ) -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>⚙️ Параметры</h3>
-                <span class="modal-close" onclick="closeSettingsModal()">&times;</span>
+        <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⚙️ Параметры</h3>
+                    <span class="modal-close" onclick="closeSettingsModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="param-group">
+                        <label>👤 Ваше имя</label>
+                        <input type="text" id="userFullName" placeholder="Имя">
+                    </div>
+                    <div class="param-group">
+                        <label>⚖️ Вес (кг)</label>
+                        <input type="number" id="userWeight" step="0.1" placeholder="Вес">
+                    </div>
+                    <div class="param-group">
+                        <label>📏 Рост (см)</label>
+                        <input type="number" id="userHeight" placeholder="Рост">
+                    </div>
+                    <div class="param-group">
+                        <label>🎂 Возраст</label>
+                        <input type="number" id="userAge" placeholder="Возраст">
+                    </div>
+                    <div class="param-group">
+                        <label>⚧ Пол</label>
+                        <select id="userGender">
+                            <option value="male">Мужской</option>
+                            <option value="female">Женский</option>
+                        </select>
+                    </div>
+                    <div class="param-group">
+                        <label>🏃 Активность</label>
+                        <select id="userActivity">
+                            <option value="1.2">Минимальная</option>
+                            <option value="1.375">Низкая (1-3 тренировки)</option>
+                            <option value="1.55">Средняя (3-5 тренировок)</option>
+                            <option value="1.725">Высокая (6-7 тренировок)</option>
+                            <option value="1.9">Очень высокая</option>
+                        </select>
+                    </div>
+                    <div class="param-group">
+                        <label>🎯 Цель</label>
+                        <select id="userGoal">
+                            <option value="maintain">Поддержание</option>
+                            <option value="lose">Похудение (-500 ккал)</option>
+                            <option value="gain">Набор массы (+300 ккал)</option>
+                        </select>
+                    </div>
+                    <div class="param-divider"></div>
+                    <div class="param-group">
+                        <label>🔥 Норма калорий</label>
+                        <input type="number" id="setCalorieGoalModal">
+                    </div>
+                    <div class="param-group">
+                        <label>🥩 Белки (г)</label>
+                        <input type="number" id="setProteinGoalModal">
+                    </div>
+                    <div class="param-group">
+                        <label>🧈 Жиры (г)</label>
+                        <input type="number" id="setFatsGoalModal">
+                    </div>
+                    <div class="param-group">
+                        <label>🍚 Углеводы (г)</label>
+                        <input type="number" id="setCarbsGoalModal">
+                    </div>
+                    <div class="param-group">
+                        <label>💧 Вода (мл)</label>
+                        <input type="number" id="setWaterGoalModal">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="saveAllSettings()">💾 Сохранить</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="param-group">
-                    <label>👤 Ваше имя</label>
-                    <input type="text" id="userFullName" placeholder="Имя">
-                </div>
-                <div class="param-group">
-                    <label>⚖️ Вес (кг)</label>
-                    <input type="number" id="userWeight" step="0.1" placeholder="Вес">
-                </div>
-                <div class="param-group">
-                    <label>📏 Рост (см)</label>
-                    <input type="number" id="userHeight" placeholder="Рост">
-                </div>
-                <div class="param-group">
-                    <label>🎂 Возраст</label>
-                    <input type="number" id="userAge" placeholder="Возраст">
-                </div>
-                <div class="param-group">
-                    <label>⚧ Пол</label>
-                    <select id="userGender">
-                        <option value="male">Мужской</option>
-                        <option value="female">Женский</option>
-                    </select>
-                </div>
-                <div class="param-group">
-                    <label>🏃 Активность</label>
-                    <select id="userActivity">
-                        <option value="1.2">Минимальная (сидячая работа)</option>
-                        <option value="1.375">Низкая (1-3 тренировки)</option>
-                        <option value="1.55">Средняя (3-5 тренировок)</option>
-                        <option value="1.725">Высокая (6-7 тренировок)</option>
-                        <option value="1.9">Очень высокая (профессиональный спорт)</option>
-                    </select>
-                </div>
-                <div class="param-group">
-                    <label>🎯 Цель</label>
-                    <select id="userGoal">
-                        <option value="maintain">Поддержание веса</option>
-                        <option value="lose">Похудение</option>
-                        <option value="gain">Набор массы</option>
-                    </select>
-                </div>
-                <div class="param-divider"></div>
-                <div class="param-group">
-                    <label>🔥 Дневная норма калорий</label>
-                    <input type="number" id="setCalorieGoalModal" placeholder="Калории">
-                    <small class="hint" id="calculatedCaloriesHint">Рассчитается автоматически</small>
-                </div>
-                <div class="param-group">
-                    <label>🥩 Белки (г)</label>
-                    <input type="number" id="setProteinGoalModal" placeholder="Белки">
-                </div>
-                <div class="param-group">
-                    <label>🧈 Жиры (г)</label>
-                    <input type="number" id="setFatsGoalModal" placeholder="Жиры">
-                </div>
-                <div class="param-group">
-                    <label>🍚 Углеводы (г)</label>
-                    <input type="number" id="setCarbsGoalModal" placeholder="Углеводы">
-                </div>
-                <div class="param-group">
-                    <label>💧 Цель воды (мл)</label>
-                    <input type="number" id="setWaterGoalModal" placeholder="Вода">
-                </div>
+        </div>
+
+        <!-- История приёмов пищи (внизу) -->
+        <div class="history-section">
+            <div class="history-header">
+                <span>📋 Сегодня</span>
+                <span class="history-total" id="mealsCount">0</span>
             </div>
-            <div class="modal-footer">
-                <button onclick="saveAllSettings()">💾 Сохранить</button>
-            </div>
+            <div id="mealsHistoryList" class="history-list"></div>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ (авторизация) -->
-    <div id="profileModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>👤 Профиль</h3>
-                <span class="modal-close" onclick="closeProfileModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div id="authState">
-                    <div id="unauthedView" class="auth-buttons">
-                        <button class="google-btn" onclick="signInWithGoogle()">🔐 Войти через Google</button>
-                        <button class="apple-btn" onclick="signInWithApple()">🍎 Войти через Apple</button>
-                        <div class="guest-note">Или оставайтесь гостем — данные сохранятся локально</div>
-                    </div>
-                    <div id="authedView" style="display:none;">
-                        <div class="user-info">
-                            <div class="user-avatar-large" id="profileAvatar">👤</div>
-                            <div class="user-email" id="userEmail"></div>
-                            <button class="logout-btn" onclick="signOut()">Выйти</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
