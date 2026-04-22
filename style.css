@@ -542,3 +542,98 @@ body {
     width: 0;
     background: transparent;
 }
+/* Добавить в конец существующего style.css */
+
+/* Кнопка редактирования воды */
+.edit-water-btn {
+    background: #2c2c2e;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: #0a84ff;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.edit-water-btn:hover {
+    background: #3a3a3c;
+}
+
+/* Кнопки редактирования/удаления в истории */
+.edit-history-btn {
+    background: #0a84ff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 10px;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.delete-history-btn {
+    background: #ff3b30;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 10px;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* Макросы в истории */
+.history-item-macros {
+    font-size: 11px;
+    color: #8e8e93;
+    margin-top: 4px;
+}
+
+/* Кнопки в модалке воды */
+.save-water-btn {
+    width: 100%;
+    background: #0a84ff;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.reset-water-btn {
+    width: 100%;
+    background: #ff3b30;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* История */
+.history-item {
+    background: #1c1c1e;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-item-info {
+    flex: 1;
+}
+
+.history-item-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.history-item-details {
+    font-size: 12px;
+    color: #8e8e93;
+    margin-top: 2px;
+}
