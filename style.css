@@ -17,6 +17,8 @@ body {
     display: flex;
     flex-direction: column;
     background: #000000;
+    overflow-y: auto;
+    padding-bottom: 20px;
 }
 
 /* Шапка */
@@ -28,6 +30,8 @@ body {
     background: rgba(0,0,0,0.95);
     backdrop-filter: blur(10px);
     border-bottom: 0.5px solid rgba(255,255,255,0.1);
+    position: sticky;
+    top: 0;
     z-index: 10;
 }
 
@@ -44,32 +48,9 @@ body {
 .logo-text {
     font-size: 20px;
     font-weight: 700;
-    background: linear-gradient(135deg, #0a84ff, #5e5ce0);
+    background: linear-gradient(135deg, #ff3b30, #ff9500);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-
-.header-actions {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-}
-
-.user-avatar {
-    width: 36px;
-    height: 36px;
-    background: #1c1c1e;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 18px;
-    transition: 0.2s;
-}
-
-.user-avatar:hover {
-    background: #2c2c2e;
 }
 
 .settings-icon {
@@ -84,58 +65,26 @@ body {
     transform: rotate(30deg);
 }
 
-/* Контентная область */
+/* Контент */
 .content {
     flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    padding-bottom: 80px;
+    padding: 20px 20px 100px 20px;
 }
 
-.tab-page {
-    display: none;
-    animation: fadeIn 0.25s ease;
-}
-
-.tab-page.active {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Приветствие */
-.greeting {
-    margin-bottom: 20px;
-}
-
-.greeting h1 {
-    font-size: 26px;
-    font-weight: 700;
-}
-
-.greeting p {
-    font-size: 14px;
-    color: #8e8e93;
-    margin-top: 4px;
-}
-
-/* Водное кольцо */
-.water-ring-container {
+/* КОЛЬЦО КАЛОРИЙ */
+.calorie-ring-container {
     display: flex;
     justify-content: center;
-    margin-bottom: 28px;
+    margin: 20px 0 30px 0;
 }
 
-.water-ring {
+.calorie-ring {
     position: relative;
-    width: 180px;
-    height: 180px;
+    width: 220px;
+    height: 220px;
 }
 
-.water-ring-text {
+.calorie-ring-text {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -143,131 +92,263 @@ body {
     text-align: center;
 }
 
-.water-percent {
-    font-size: 28px;
-    font-weight: 700;
+.calorie-current {
+    font-size: 48px;
+    font-weight: 800;
+    color: #ff3b30;
+    line-height: 1;
+}
+
+.calorie-target {
+    font-size: 18px;
+    color: #8e8e93;
+    margin-top: 4px;
+}
+
+.calorie-label {
+    font-size: 12px;
+    color: #8e8e93;
+    margin-top: 6px;
+}
+
+/* БЖУ ПОЛОСКИ */
+.macros-container {
+    margin-bottom: 24px;
+}
+
+.macro-row-item {
+    background: #1c1c1e;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+}
+
+.macro-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.macro-icon {
+    font-size: 18px;
+}
+
+.macro-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.macro-values {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ff9f0a;
+}
+
+.macro-bar {
+    background: #2c2c2e;
+    border-radius: 8px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.macro-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.3s ease;
+}
+
+.protein-fill { background: #0a84ff; }
+.fats-fill { background: #ff9f0a; }
+.carbs-fill { background: #30d158; }
+
+/* ВОДА ПОЛОСКА */
+.water-container {
+    background: #1c1c1e;
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+.water-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.water-icon {
+    font-size: 20px;
+}
+
+.water-name {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.water-values {
+    font-size: 14px;
+    font-weight: 600;
     color: #0a84ff;
 }
 
-.water-amount {
+.water-bar {
+    background: #2c2c2e;
+    border-radius: 10px;
+    height: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.water-fill {
+    background: #0a84ff;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.water-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.water-btn-small {
+    background: #2c2c2e;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #0a84ff;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* Кнопка добавления еды */
+.add-food-button {
+    margin-bottom: 20px;
+}
+
+.add-food-main {
+    width: 100%;
+    background: linear-gradient(135deg, #ff3b30, #ff9500);
+    border: none;
+    padding: 16px;
+    border-radius: 24px;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+/* КРУГЛАЯ ИИ-КНОПКА */
+.ai-fab {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #0a84ff, #5e5ce0);
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(10,132,255,0.4);
+    z-index: 20;
+    transition: transform 0.2s;
+}
+
+.ai-fab:hover {
+    transform: scale(1.05);
+}
+
+.ai-icon {
+    font-size: 28px;
+}
+
+.ai-label {
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* История */
+.history-section {
+    padding: 0 20px 20px 20px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #8e8e93;
+    font-size: 14px;
+}
+
+.history-total {
+    background: #1c1c1e;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #ff9f0a;
+}
+
+.history-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.history-item {
+    background: #1c1c1e;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-item-info {
+    flex: 1;
+}
+
+.history-item-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.history-item-details {
     font-size: 12px;
     color: #8e8e93;
     margin-top: 4px;
 }
 
-/* Статистика */
-.stats-row {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.stat-card {
-    flex: 1;
-    background: #1c1c1e;
-    border-radius: 20px;
-    padding: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.stat-icon {
-    font-size: 24px;
-}
-
-.stat-value {
-    font-size: 26px;
+.history-item-calories {
     font-weight: 700;
+    color: #ff3b30;
+    font-size: 16px;
 }
 
-.stat-label {
+.delete-history-btn {
+    background: #ff3b30;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 10px;
+    color: white;
     font-size: 12px;
-    color: #8e8e93;
-}
-
-/* БЖУ строка */
-.macros-row {
-    display: flex;
-    gap: 12px;
-    background: #1c1c1e;
-    border-radius: 20px;
-    padding: 14px;
-    margin-bottom: 20px;
-}
-
-.macro-item {
-    flex: 1;
-    text-align: center;
-}
-
-.macro-value {
-    display: block;
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.macro-label {
-    font-size: 11px;
-    color: #8e8e93;
-}
-
-/* ИИ секция */
-.ai-section {
-    background: linear-gradient(135deg, #1c1c1e, #0a1a2e);
-    border-radius: 20px;
-    padding: 16px;
-    margin-bottom: 20px;
-    border: 0.5px solid rgba(10,132,255,0.3);
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    font-weight: 600;
-}
-
-.ai-badge {
-    background: #0a84ff20;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 10px;
-    color: #0a84ff;
-}
-
-.ai-upload {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.ai-upload input {
-    flex: 1;
-    background: #2c2c2e;
-    border: none;
-    padding: 12px;
-    border-radius: 14px;
-    color: white;
-    font-size: 13px;
-}
-
-.ai-upload button {
-    background: #0a84ff;
-    border: none;
-    padding: 12px 16px;
-    border-radius: 14px;
-    color: white;
-    font-weight: 600;
     cursor: pointer;
-}
-
-.ai-result {
-    background: #2c2c2e;
-    border-radius: 14px;
-    padding: 12px;
-    margin-top: 10px;
-    font-size: 14px;
+    margin-left: 10px;
 }
 
 /* Модальные окна */
@@ -278,8 +359,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(12px);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -289,7 +370,7 @@ body {
     background: #1c1c1e;
     border-radius: 28px;
     width: 90%;
-    max-width: 400px;
+    max-width: 380px;
     max-height: 85vh;
     overflow-y: auto;
     animation: modalSlideIn 0.3s ease;
@@ -367,251 +448,97 @@ body {
     margin: 20px 0;
 }
 
-.hint {
-    display: block;
-    font-size: 11px;
-    color: #0a84ff;
-    margin-top: 6px;
-}
-
-/* Кнопки авторизации */
-.auth-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.google-btn, .apple-btn {
-    padding: 14px;
-    border-radius: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    font-size: 16px;
-}
-
-.google-btn {
-    background: #ffffff;
-    color: #000000;
-}
-
-.apple-btn {
-    background: #000000;
-    color: #ffffff;
-    border: 0.5px solid #3a3a3c;
-}
-
-.guest-note {
-    text-align: center;
-    font-size: 12px;
-    color: #8e8e93;
-    margin-top: 16px;
-}
-
-.user-info {
-    text-align: center;
-}
-
-.user-avatar-large {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #0a84ff, #5e5ce0);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    margin: 0 auto 16px;
-}
-
-.user-email {
-    font-size: 14px;
-    color: #8e8e93;
-    margin-bottom: 20px;
-}
-
-.logout-btn {
-    background: #ff3b30;
-    border: none;
-    padding: 12px;
-    border-radius: 14px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-}
-
-/* Остальные стили (вода, еда, тренировки и т.д.) */
-.water-progress-card, .add-food-form, .add-workout-form, .settings-group {
-    background: #1c1c1e;
-    border-radius: 20px;
-    padding: 16px;
-    margin-bottom: 20px;
-}
-
-.water-buttons-grid {
+.macro-inputs-modal {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
+    gap: 8px;
+    margin: 12px 0;
 }
 
-.water-btn {
-    background: #1c1c1e;
-    border: none;
-    padding: 14px;
-    border-radius: 14px;
-    color: #0a84ff;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.custom-input {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.custom-input input, .add-weight-form input, .add-habit-form input {
-    flex: 1;
+.macro-inputs-modal input {
     background: #2c2c2e;
     border: none;
     padding: 12px;
-    border-radius: 14px;
+    border-radius: 12px;
     color: white;
-}
-
-.macros-summary {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
-}
-
-.macro-card {
-    background: #1c1c1e;
-    border-radius: 14px;
-    padding: 10px;
     text-align: center;
 }
 
-.macro-big {
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.macro-inputs {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-}
-
-.food-item, .workout-item, .habit-item, .weight-item, .water-history-item {
-    background: #1c1c1e;
-    border-radius: 14px;
+#addFoodModal input, #addFoodModal select {
+    width: 100%;
+    background: #2c2c2e;
+    border: none;
     padding: 12px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 12px;
 }
 
-.delete-btn {
+.add-btn-modal {
+    width: 100%;
     background: #ff3b30;
     border: none;
-    padding: 6px 12px;
-    border-radius: 10px;
+    padding: 14px;
+    border-radius: 14px;
     color: white;
+    font-weight: 600;
     cursor: pointer;
+    margin-top: 12px;
 }
 
-.current-weight-card {
-    background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
-    border-radius: 24px;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 16px;
-}
-
-.current-weight-value {
-    font-size: 48px;
-    font-weight: 800;
-    color: #ff9f0a;
-}
-
-.weight-chart-container {
-    background: #1c1c1e;
-    border-radius: 20px;
-    padding: 16px;
-    margin-bottom: 16px;
-    height: 200px;
-}
-
-.workout-stats-row {
+/* ИИ опции */
+.ai-options {
     display: flex;
     gap: 12px;
+    margin-bottom: 20px;
+}
+
+.ai-option-btn {
+    flex: 1;
+    background: #2c2c2e;
+    border: none;
+    padding: 14px;
+    border-radius: 16px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ai-preview {
+    text-align: center;
     margin-bottom: 16px;
 }
 
-.workout-stat {
-    flex: 1;
-    background: #1c1c1e;
-    border-radius: 16px;
-    padding: 12px;
-    text-align: center;
+.ai-preview img {
+    max-width: 100%;
+    border-radius: 20px;
+    margin-bottom: 12px;
 }
 
-.workout-stat span:first-child {
-    display: block;
-    font-size: 22px;
-    font-weight: 700;
-}
-
-.tab-bar {
-    background: rgba(28,28,30,0.95);
-    backdrop-filter: blur(20px);
-    border-top: 0.5px solid rgba(255,255,255,0.1);
-    display: flex;
-    justify-content: space-around;
-    padding: 8px 12px 12px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-.tab-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+.analyze-btn {
+    background: #0a84ff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    color: white;
+    font-weight: 600;
     cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 12px;
 }
 
-.tab-icon {
-    font-size: 22px;
-    opacity: 0.6;
-}
-
-.tab-label {
-    font-size: 10px;
-    font-weight: 500;
-    opacity: 0.6;
-}
-
-.tab-item.active .tab-icon,
-.tab-item.active .tab-label {
-    opacity: 1;
-    color: #0a84ff;
+.ai-result {
+    background: #2c2c2e;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+    font-size: 14px;
 }
 
 .hidden {
     display: none;
 }
 
-.content::-webkit-scrollbar {
+/* Скролл */
+::-webkit-scrollbar {
     width: 0;
     background: transparent;
 }
