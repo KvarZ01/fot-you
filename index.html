@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="app">
-        <!-- ШАПКА С ШЕСТЕРЁНКОЙ -->
+        <!-- ШАПКА -->
         <div class="app-header">
             <div class="logo-area">
                 <span class="logo-icon">🔥</span>
@@ -18,7 +18,6 @@
             <div class="settings-icon" id="settingsButton">⚙️</div>
         </div>
 
-        <!-- ОСНОВНОЙ КОНТЕНТ -->
         <div class="content">
             <!-- КОЛЬЦО КАЛОРИЙ -->
             <div class="calorie-ring-container">
@@ -43,9 +42,7 @@
                         <span class="macro-name">Белки</span>
                         <span class="macro-values"><span id="proteinCurrent">0</span> / <span id="proteinTarget">150</span> г</span>
                     </div>
-                    <div class="macro-bar">
-                        <div class="macro-fill protein-fill" id="proteinFill" style="width: 0%"></div>
-                    </div>
+                    <div class="macro-bar"><div class="macro-fill protein-fill" id="proteinFill" style="width: 0%"></div></div>
                 </div>
                 <div class="macro-row-item">
                     <div class="macro-header">
@@ -53,9 +50,7 @@
                         <span class="macro-name">Жиры</span>
                         <span class="macro-values"><span id="fatsCurrent">0</span> / <span id="fatsTarget">65</span> г</span>
                     </div>
-                    <div class="macro-bar">
-                        <div class="macro-fill fats-fill" id="fatsFill" style="width: 0%"></div>
-                    </div>
+                    <div class="macro-bar"><div class="macro-fill fats-fill" id="fatsFill" style="width: 0%"></div></div>
                 </div>
                 <div class="macro-row-item">
                     <div class="macro-header">
@@ -63,13 +58,11 @@
                         <span class="macro-name">Углеводы</span>
                         <span class="macro-values"><span id="carbsCurrent">0</span> / <span id="carbsTarget">250</span> г</span>
                     </div>
-                    <div class="macro-bar">
-                        <div class="macro-fill carbs-fill" id="carbsFill" style="width: 0%"></div>
-                    </div>
+                    <div class="macro-bar"><div class="macro-fill carbs-fill" id="carbsFill" style="width: 0%"></div></div>
                 </div>
             </div>
 
-            <!-- ВОДА ПОЛОСКА -->
+            <!-- ВОДА -->
             <div class="water-container">
                 <div class="water-header">
                     <span class="water-icon">💧</span>
@@ -77,10 +70,8 @@
                     <span class="water-values"><span id="waterCurrent">0</span> / <span id="waterTarget">2000</span> мл</span>
                     <button class="edit-water-btn" id="editWaterBtn">✏️</button>
                 </div>
-                <div class="water-bar">
-                    <div class="water-fill" id="waterFill" style="width: 0%"></div>
-                </div>
-                <div class="water-buttons" id="waterButtonsContainer">
+                <div class="water-bar"><div class="water-fill" id="waterFill" style="width: 0%"></div></div>
+                <div class="water-buttons">
                     <button class="water-btn-small" data-water="50">+50</button>
                     <button class="water-btn-small" data-water="100">+100</button>
                     <button class="water-btn-small" data-water="150">+150</button>
@@ -90,169 +81,121 @@
                 </div>
             </div>
 
-            <!-- КНОПКА ДОБАВЛЕНИЯ ЕДЫ -->
             <div class="add-food-button">
-                <button class="add-food-main" id="addFoodMainBtn">
-                    <span>🍽️</span> Добавить приём пищи
-                </button>
+                <button class="add-food-main" id="addFoodMainBtn">🍽️ Добавить приём пищи</button>
             </div>
         </div>
 
-        <!-- КРУГЛАЯ ИИ-КНОПКА -->
-        <div class="ai-fab" id="aiFabButton">
-            <span class="ai-icon">🤖</span>
-            <span class="ai-label">ИИ</span>
+        <!-- КРУГЛАЯ ИИ КНОПКА -->
+        <div class="ai-fab" id="aiFabButton">🤖</div>
+
+        <!-- МОДАЛКА НАСТРОЕК (ПРОСТАЯ РАБОЧАЯ) -->
+        <div id="settingsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; align-items:center; justify-content:center;">
+            <div style="background:#1c1c1e; border-radius:28px; width:90%; max-width:380px; max-height:85vh; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 20px; border-bottom:0.5px solid #2c2c2e;">
+                    <h3 style="font-size:20px;">⚙️ Параметры</h3>
+                    <span id="closeSettingsBtn" style="font-size:28px; cursor:pointer;">&times;</span>
+                </div>
+                <div style="padding:20px;">
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">👤 Ваше имя</label>
+                        <input type="text" id="userFullName" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">⚖️ Вес (кг)</label>
+                        <input type="number" id="userWeight" step="0.1" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">📏 Рост (см)</label>
+                        <input type="number" id="userHeight" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">🎂 Возраст</label>
+                        <input type="number" id="userAge" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">⚧ Пол</label>
+                        <select id="userGender" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                            <option value="male">Мужской</option>
+                            <option value="female">Женский</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">🏃 Активность</label>
+                        <select id="userActivity" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                            <option value="1.2">Минимальная</option>
+                            <option value="1.375">Низкая (1-3 тренировки)</option>
+                            <option value="1.55">Средняя (3-5 тренировок)</option>
+                            <option value="1.725">Высокая (6-7 тренировок)</option>
+                            <option value="1.9">Очень высокая</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">🎯 Цель</label>
+                        <select id="userGoal" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                            <option value="maintain">Поддержание</option>
+                            <option value="lose">Похудение</option>
+                            <option value="gain">Набор массы</option>
+                        </select>
+                    </div>
+                    <div style="height:1px; background:#2c2c2e; margin:20px 0;"></div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">🔥 Норма калорий</label>
+                        <input type="number" id="setCalorieGoalModal" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">🥩 Белки (г)</label>
+                        <input type="number" id="setProteinGoalModal" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">🧈 Жиры (г)</label>
+                        <input type="number" id="setFatsGoalModal" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">🍚 Углеводы (г)</label>
+                        <input type="number" id="setCarbsGoalModal" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:14px; color:#8e8e93; margin-bottom:6px;">💧 Вода (мл)</label>
+                        <input type="number" id="setWaterGoalModal" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white;">
+                    </div>
+                </div>
+                <div style="padding:16px 20px; border-top:0.5px solid #2c2c2e;">
+                    <button id="saveSettingsBtn" style="width:100%; background:#0a84ff; border:none; padding:14px; border-radius:14px; color:white; font-weight:600; cursor:pointer;">💾 Сохранить</button>
+                </div>
+            </div>
         </div>
 
-        <!-- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ/РЕДАКТИРОВАНИЯ ЕДЫ -->
-        <div id="addFoodModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
+        <!-- МОДАЛКА ДОБАВЛЕНИЯ ЕДЫ -->
+        <div id="addFoodModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; align-items:center; justify-content:center;">
+            <div style="background:#1c1c1e; border-radius:28px; width:90%; max-width:380px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 20px; border-bottom:0.5px solid #2c2c2e;">
                     <h3 id="foodModalTitle">🍽️ Добавить еду</h3>
-                    <span class="modal-close" id="closeAddFoodModal">&times;</span>
+                    <span id="closeAddFoodBtn" style="font-size:28px; cursor:pointer;">&times;</span>
                 </div>
-                <div class="modal-body">
-                    <input type="hidden" id="editingFoodId" value="">
-                    <input type="text" id="foodName" placeholder="Название блюда">
-                    <input type="number" id="foodCal" placeholder="Калории">
-                    <div class="macro-inputs-modal">
-                        <input type="number" id="foodProt" placeholder="Белки">
-                        <input type="number" id="foodFat" placeholder="Жиры">
-                        <input type="number" id="foodCarb" placeholder="Углеводы">
+                <div style="padding:20px;">
+                    <input type="hidden" id="editingFoodId">
+                    <input type="text" id="foodName" placeholder="Название" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white; margin-bottom:12px;">
+                    <input type="number" id="foodCal" placeholder="Калории" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white; margin-bottom:12px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
+                        <input type="number" id="foodProt" placeholder="Белки" style="background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white; text-align:center;">
+                        <input type="number" id="foodFat" placeholder="Жиры" style="background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white; text-align:center;">
+                        <input type="number" id="foodCarb" placeholder="Углеводы" style="background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white; text-align:center;">
                     </div>
-                    <select id="foodMealType">
+                    <select id="foodMealType" style="width:100%; background:#2c2c2e; border:none; padding:12px; border-radius:12px; color:white; margin-bottom:12px;">
                         <option value="breakfast">🍳 Завтрак</option>
                         <option value="lunch">🥗 Обед</option>
                         <option value="dinner">🍲 Ужин</option>
                         <option value="snack">🍎 Перекус</option>
                     </select>
-                    <button class="add-btn-modal" id="confirmAddFoodBtn">Добавить</button>
+                    <button id="confirmAddFoodBtn" style="width:100%; background:#ff3b30; border:none; padding:14px; border-radius:14px; color:white; font-weight:600; cursor:pointer;">Добавить</button>
                 </div>
             </div>
         </div>
 
-        <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ВОДЫ -->
-        <div id="editWaterModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>💧 Редактировать воду</h3>
-                    <span class="modal-close" id="closeEditWaterModal">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <div class="param-group">
-                        <label>Текущее количество воды (мл)</label>
-                        <input type="number" id="editWaterAmount" placeholder="мл">
-                    </div>
-                    <button id="saveWaterBtn" class="save-water-btn">💾 Сохранить</button>
-                    <button id="resetWaterBtn" class="reset-water-btn">🗑️ Сбросить воду</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- МОДАЛЬНОЕ ОКНО ИИ -->
-        <div id="aiModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>🤖 ИИ анализ еды</h3>
-                    <span class="modal-close" id="closeAIModal">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <div class="ai-options">
-                        <button class="ai-option-btn" id="galleryBtn">📸 Выбрать из галереи</button>
-                        <button class="ai-option-btn" id="cameraBtn">🎥 Сделать фото</button>
-                    </div>
-                    <div id="aiPreview" class="ai-preview hidden">
-                        <img id="aiPreviewImg" src="">
-                        <button id="analyzeBtn" class="analyze-btn">🔍 Распознать</button>
-                    </div>
-                    <div id="aiResult" class="ai-result hidden"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК -->
-        <div id="settingsModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>⚙️ Параметры</h3>
-                    <span class="modal-close" id="closeSettingsModal">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <div class="param-group">
-                        <label>👤 Ваше имя</label>
-                        <input type="text" id="userFullName" placeholder="Имя">
-                    </div>
-                    <div class="param-group">
-                        <label>⚖️ Вес (кг)</label>
-                        <input type="number" id="userWeight" step="0.1" placeholder="Вес">
-                    </div>
-                    <div class="param-group">
-                        <label>📏 Рост (см)</label>
-                        <input type="number" id="userHeight" placeholder="Рост">
-                    </div>
-                    <div class="param-group">
-                        <label>🎂 Возраст</label>
-                        <input type="number" id="userAge" placeholder="Возраст">
-                    </div>
-                    <div class="param-group">
-                        <label>⚧ Пол</label>
-                        <select id="userGender">
-                            <option value="male">Мужской</option>
-                            <option value="female">Женский</option>
-                        </select>
-                    </div>
-                    <div class="param-group">
-                        <label>🏃 Активность</label>
-                        <select id="userActivity">
-                            <option value="1.2">Минимальная (сидячая работа)</option>
-                            <option value="1.375">Низкая (1-3 тренировки)</option>
-                            <option value="1.55">Средняя (3-5 тренировок)</option>
-                            <option value="1.725">Высокая (6-7 тренировок)</option>
-                            <option value="1.9">Очень высокая (проф. спорт)</option>
-                        </select>
-                    </div>
-                    <div class="param-group">
-                        <label>🎯 Цель</label>
-                        <select id="userGoal">
-                            <option value="maintain">Поддержание веса</option>
-                            <option value="lose">Похудение (-500 ккал/день)</option>
-                            <option value="gain">Набор массы (+300 ккал/день)</option>
-                        </select>
-                    </div>
-                    <div class="param-divider"></div>
-                    <div class="param-group">
-                        <label>🔥 Дневная норма калорий</label>
-                        <input type="number" id="setCalorieGoalModal" placeholder="ккал">
-                    </div>
-                    <div class="param-group">
-                        <label>🥩 Белки (г)</label>
-                        <input type="number" id="setProteinGoalModal" placeholder="г">
-                    </div>
-                    <div class="param-group">
-                        <label>🧈 Жиры (г)</label>
-                        <input type="number" id="setFatsGoalModal" placeholder="г">
-                    </div>
-                    <div class="param-group">
-                        <label>🍚 Углеводы (г)</label>
-                        <input type="number" id="setCarbsGoalModal" placeholder="г">
-                    </div>
-                    <div class="param-group">
-                        <label>💧 Цель воды (мл)</label>
-                        <input type="number" id="setWaterGoalModal" placeholder="мл">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button id="saveSettingsBtn">💾 Сохранить</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ИСТОРИЯ ПРИЁМОВ ПИЩИ -->
+        <!-- ИСТОРИЯ -->
         <div class="history-section">
-            <div class="history-header">
-                <span>📋 Сегодня</span>
-                <span class="history-total" id="mealsCount">0</span>
-            </div>
+            <div class="history-header"><span>📋 Сегодня</span><span class="history-total" id="mealsCount">0</span></div>
             <div id="mealsHistoryList" class="history-list"></div>
         </div>
     </div>
