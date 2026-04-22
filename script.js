@@ -21,7 +21,6 @@ let appData = {
 };
 
 let selectedImageFile = null;
-let currentEditingFoodId = null;
 
 // ========== ЗАГРУЗКА/СОХРАНЕНИЕ ==========
 function loadData() {
@@ -127,10 +126,8 @@ function openAddFoodModal(editId = null) {
     const confirmBtn = document.getElementById('confirmAddFoodBtn');
     
     if (editId) {
-        // Режим редактирования
         const foodToEdit = appData.food.find(f => f.id === editId);
         if (foodToEdit) {
-            currentEditingFoodId = editId;
             document.getElementById('editingFoodId').value = editId;
             document.getElementById('foodName').value = foodToEdit.name;
             document.getElementById('foodCal').value = foodToEdit.calories;
@@ -138,12 +135,10 @@ function openAddFoodModal(editId = null) {
             document.getElementById('foodFat').value = foodToEdit.fats || 0;
             document.getElementById('foodCarb').value = foodToEdit.carbs || 0;
             document.getElementById('foodMealType').value = foodToEdit.mealType || 'snack';
-            modalTitle.innerHTML = '✏️ Редактировать еду';
-            confirmBtn.innerHTML = '💾 Сохранить изменения';
+            if (modalTitle) modalTitle.innerHTML = '✏️ Редактировать еду';
+            if (confirmBtn) confirmBtn.innerHTML = '💾 Сохранить изменения';
         }
     } else {
-        // Режим добавления
-        currentEditingFoodId = null;
         document.getElementById('editingFoodId').value = '';
         document.getElementById('foodName').value = '';
         document.getElementById('foodCal').value = '';
@@ -151,8 +146,8 @@ function openAddFoodModal(editId = null) {
         document.getElementById('foodFat').value = '';
         document.getElementById('foodCarb').value = '';
         document.getElementById('foodMealType').value = 'snack';
-        modalTitle.innerHTML = '🍽️ Добавить еду';
-        confirmBtn.innerHTML = 'Добавить';
+        if (modalTitle) modalTitle.innerHTML = '🍽️ Добавить еду';
+        if (confirmBtn) confirmBtn.innerHTML = 'Добавить';
     }
     
     if (modal) modal.style.display = 'flex';
@@ -161,7 +156,6 @@ function openAddFoodModal(editId = null) {
 function closeAddFoodModal() {
     const modal = document.getElementById('addFoodModal');
     if (modal) modal.style.display = 'none';
-    currentEditingFoodId = null;
 }
 
 function saveFood() {
@@ -180,7 +174,6 @@ function saveFood() {
     const editingId = document.getElementById('editingFoodId')?.value;
     
     if (editingId) {
-        // Редактирование существующей записи
         const index = appData.food.findIndex(f => f.id == editingId);
         if (index !== -1) {
             appData.food[index] = {
@@ -195,7 +188,6 @@ function saveFood() {
             };
         }
     } else {
-        // Добавление новой записи
         appData.food.push({
             id: Date.now(),
             name: name,
@@ -226,23 +218,45 @@ function editFood(id) {
     openAddFoodModal(id);
 }
 
-// ========== НАСТРОЙКИ ==========
+// ========== НАСТРОЙКИ (ГЛАВНАЯ ФУНКЦИЯ) ==========
 function openSettingsModal() {
+    console.log('openSettingsModal вызвана'); // Диагностика
     const modal = document.getElementById('settingsModal');
+    console.log('modal элемент:', modal); // Диагностика
+    
     if (modal) {
-        document.getElementById('userFullName').value = appData.userProfile.name || "";
-        document.getElementById('userWeight').value = appData.userProfile.weight;
-        document.getElementById('userHeight').value = appData.userProfile.height;
-        document.getElementById('userAge').value = appData.userProfile.age;
-        document.getElementById('userGender').value = appData.userProfile.gender;
-        document.getElementById('userActivity').value = appData.userProfile.activity;
-        document.getElementById('userGoal').value = appData.userProfile.goal;
-        document.getElementById('setCalorieGoalModal').value = appData.settings.calorieGoal;
-        document.getElementById('setProteinGoalModal').value = appData.settings.proteinGoal;
-        document.getElementById('setFatsGoalModal').value = appData.settings.fatsGoal;
-        document.getElementById('setCarbsGoalModal').value = appData.settings.carbsGoal;
-        document.getElementById('setWaterGoalModal').value = appData.settings.waterGoal;
+        // Заполняем поля текущими значениями
+        const userNameInput = document.getElementById('userFullName');
+        const userWeightInput = document.getElementById('userWeight');
+        const userHeightInput = document.getElementById('userHeight');
+        const userAgeInput = document.getElementById('userAge');
+        const userGenderSelect = document.getElementById('userGender');
+        const userActivitySelect = document.getElementById('userActivity');
+        const userGoalSelect = document.getElementById('userGoal');
+        const calorieGoalInput = document.getElementById('setCalorieGoalModal');
+        const proteinGoalInput = document.getElementById('setProteinGoalModal');
+        const fatsGoalInput = document.getElementById('setFatsGoalModal');
+        const carbsGoalInput = document.getElementById('setCarbsGoalModal');
+        const waterGoalInput = document.getElementById('setWaterGoalModal');
+        
+        if (userNameInput) userNameInput.value = appData.userProfile.name || "";
+        if (userWeightInput) userWeightInput.value = appData.userProfile.weight;
+        if (userHeightInput) userHeightInput.value = appData.userProfile.height;
+        if (userAgeInput) userAgeInput.value = appData.userProfile.age;
+        if (userGenderSelect) userGenderSelect.value = appData.userProfile.gender;
+        if (userActivitySelect) userActivitySelect.value = appData.userProfile.activity;
+        if (userGoalSelect) userGoalSelect.value = appData.userProfile.goal;
+        if (calorieGoalInput) calorieGoalInput.value = appData.settings.calorieGoal;
+        if (proteinGoalInput) proteinGoalInput.value = appData.settings.proteinGoal;
+        if (fatsGoalInput) fatsGoalInput.value = appData.settings.fatsGoal;
+        if (carbsGoalInput) carbsGoalInput.value = appData.settings.carbsGoal;
+        if (waterGoalInput) waterGoalInput.value = appData.settings.waterGoal;
+        
         modal.style.display = 'flex';
+        console.log('Модалка открыта');
+    } else {
+        console.error('Модальное окно settingsModal не найдено в DOM');
+        alert('Ошибка: окно настроек не найдено. Проверьте HTML.');
     }
 }
 
@@ -252,42 +266,60 @@ function closeSettingsModal() {
 }
 
 function saveAllSettings() {
-    appData.userProfile.name = document.getElementById('userFullName')?.value || "Гость";
-    appData.userProfile.weight = parseFloat(document.getElementById('userWeight')?.value) || 70;
-    appData.userProfile.height = parseInt(document.getElementById('userHeight')?.value) || 170;
-    appData.userProfile.age = parseInt(document.getElementById('userAge')?.value) || 30;
-    appData.userProfile.gender = document.getElementById('userGender')?.value || "male";
-    appData.userProfile.activity = document.getElementById('userActivity')?.value || "1.55";
-    appData.userProfile.goal = document.getElementById('userGoal')?.value || "maintain";
+    console.log('saveAllSettings вызвана');
     
-    const manualCal = document.getElementById('setCalorieGoalModal')?.value;
-    const manualProtein = document.getElementById('setProteinGoalModal')?.value;
-    const manualFats = document.getElementById('setFatsGoalModal')?.value;
-    const manualCarbs = document.getElementById('setCarbsGoalModal')?.value;
-    const manualWater = document.getElementById('setWaterGoalModal')?.value;
+    const nameInput = document.getElementById('userFullName');
+    const weightInput = document.getElementById('userWeight');
+    const heightInput = document.getElementById('userHeight');
+    const ageInput = document.getElementById('userAge');
+    const genderSelect = document.getElementById('userGender');
+    const activitySelect = document.getElementById('userActivity');
+    const goalSelect = document.getElementById('userGoal');
+    const calorieInput = document.getElementById('setCalorieGoalModal');
+    const proteinInput = document.getElementById('setProteinGoalModal');
+    const fatsInput = document.getElementById('setFatsGoalModal');
+    const carbsInput = document.getElementById('setCarbsGoalModal');
+    const waterInput = document.getElementById('setWaterGoalModal');
     
-    if (manualCal && parseInt(manualCal) > 0) {
-        appData.settings.calorieGoal = parseInt(manualCal);
+    if (nameInput) appData.userProfile.name = nameInput.value || "Гость";
+    if (weightInput) appData.userProfile.weight = parseFloat(weightInput.value) || 70;
+    if (heightInput) appData.userProfile.height = parseInt(heightInput.value) || 170;
+    if (ageInput) appData.userProfile.age = parseInt(ageInput.value) || 30;
+    if (genderSelect) appData.userProfile.gender = genderSelect.value;
+    if (activitySelect) appData.userProfile.activity = activitySelect.value;
+    if (goalSelect) appData.userProfile.goal = goalSelect.value;
+    
+    const manualCal = calorieInput ? parseInt(calorieInput.value) : null;
+    const manualProtein = proteinInput ? parseInt(proteinInput.value) : null;
+    const manualFats = fatsInput ? parseInt(fatsInput.value) : null;
+    const manualCarbs = carbsInput ? parseInt(carbsInput.value) : null;
+    const manualWater = waterInput ? parseInt(waterInput.value) : null;
+    
+    if (manualCal && manualCal > 0) {
+        appData.settings.calorieGoal = manualCal;
     } else {
         recalculateCaloriesFromProfile();
     }
     
-    if (manualProtein && parseInt(manualProtein) > 0) appData.settings.proteinGoal = parseInt(manualProtein);
-    if (manualFats && parseInt(manualFats) > 0) appData.settings.fatsGoal = parseInt(manualFats);
-    if (manualCarbs && parseInt(manualCarbs) > 0) appData.settings.carbsGoal = parseInt(manualCarbs);
-    if (manualWater && parseInt(manualWater) > 0) appData.settings.waterGoal = parseInt(manualWater);
+    if (manualProtein && manualProtein > 0) appData.settings.proteinGoal = manualProtein;
+    if (manualFats && manualFats > 0) appData.settings.fatsGoal = manualFats;
+    if (manualCarbs && manualCarbs > 0) appData.settings.carbsGoal = manualCarbs;
+    if (manualWater && manualWater > 0) appData.settings.waterGoal = manualWater;
     
     saveData();
     updateAllUI();
     closeSettingsModal();
+    console.log('Настройки сохранены');
 }
 
 // ========== ИИ АНАЛИЗ ==========
 function openAIModal() {
     const modal = document.getElementById('aiModal');
     if (modal) {
-        document.getElementById('aiPreview').classList.add('hidden');
-        document.getElementById('aiResult').classList.add('hidden');
+        const aiPreview = document.getElementById('aiPreview');
+        const aiResult = document.getElementById('aiResult');
+        if (aiPreview) aiPreview.classList.add('hidden');
+        if (aiResult) aiResult.classList.add('hidden');
         selectedImageFile = null;
         modal.style.display = 'flex';
     }
@@ -309,9 +341,11 @@ function selectImageFromGallery() {
             const reader = new FileReader();
             reader.onload = (ev) => {
                 const previewImg = document.getElementById('aiPreviewImg');
-                previewImg.src = ev.target.result;
-                document.getElementById('aiPreview').classList.remove('hidden');
-                document.getElementById('aiResult').classList.add('hidden');
+                if (previewImg) previewImg.src = ev.target.result;
+                const aiPreview = document.getElementById('aiPreview');
+                if (aiPreview) aiPreview.classList.remove('hidden');
+                const aiResult = document.getElementById('aiResult');
+                if (aiResult) aiResult.classList.add('hidden');
             };
             reader.readAsDataURL(file);
         }
@@ -331,9 +365,11 @@ function takePhoto() {
             const reader = new FileReader();
             reader.onload = (ev) => {
                 const previewImg = document.getElementById('aiPreviewImg');
-                previewImg.src = ev.target.result;
-                document.getElementById('aiPreview').classList.remove('hidden');
-                document.getElementById('aiResult').classList.add('hidden');
+                if (previewImg) previewImg.src = ev.target.result;
+                const aiPreview = document.getElementById('aiPreview');
+                if (aiPreview) aiPreview.classList.remove('hidden');
+                const aiResult = document.getElementById('aiResult');
+                if (aiResult) aiResult.classList.add('hidden');
             };
             reader.readAsDataURL(file);
         }
@@ -348,8 +384,10 @@ async function analyzeFoodWithAI() {
     }
     
     const resultDiv = document.getElementById('aiResult');
-    resultDiv.classList.remove('hidden');
-    resultDiv.innerHTML = "🔄 ИИ анализирует блюдо...";
+    if (resultDiv) {
+        resultDiv.classList.remove('hidden');
+        resultDiv.innerHTML = "🔄 ИИ анализирует блюдо...";
+    }
     
     const reader = new FileReader();
     reader.onloadend = async function() {
@@ -378,21 +416,23 @@ async function analyzeFoodWithAI() {
             const cleanText = text.replace(/```json|```/g, '').trim();
             const result = JSON.parse(cleanText);
             
-            resultDiv.innerHTML = `
-                <strong>🤖 ИИ определил:</strong><br>
-                🍲 ${result.name || "Блюдо"}<br>
-                🔥 ${result.calories || 0} ккал | 🥩 ${result.protein || 0}г | 🧈 ${result.fats || 0}г | 🍚 ${result.carbs || 0}г
-                <button id="quickAddFromAIBtn" style="margin-top:12px; background:#ff3b30; border:none; padding:10px 20px; border-radius:30px; color:white; font-weight:600; cursor:pointer;">✅ Добавить в дневник</button>
-            `;
-            
-            const quickBtn = document.getElementById('quickAddFromAIBtn');
-            if (quickBtn) {
-                quickBtn.onclick = function() {
-                    quickAddFromAI(result.name || "Блюдо", result.calories || 0, result.protein || 0, result.fats || 0, result.carbs || 0);
-                };
+            if (resultDiv) {
+                resultDiv.innerHTML = `
+                    <strong>🤖 ИИ определил:</strong><br>
+                    🍲 ${result.name || "Блюдо"}<br>
+                    🔥 ${result.calories || 0} ккал | 🥩 ${result.protein || 0}г | 🧈 ${result.fats || 0}г | 🍚 ${result.carbs || 0}г
+                    <button id="quickAddFromAIBtn" style="margin-top:12px; background:#ff3b30; border:none; padding:10px 20px; border-radius:30px; color:white; font-weight:600; cursor:pointer;">✅ Добавить в дневник</button>
+                `;
+                
+                const quickBtn = document.getElementById('quickAddFromAIBtn');
+                if (quickBtn) {
+                    quickBtn.onclick = function() {
+                        quickAddFromAI(result.name || "Блюдо", result.calories || 0, result.protein || 0, result.fats || 0, result.carbs || 0);
+                    };
+                }
             }
         } catch(e) {
-            resultDiv.innerHTML = "❌ Ошибка анализа. Попробуйте другое фото.";
+            if (resultDiv) resultDiv.innerHTML = "❌ Ошибка анализа. Попробуйте другое фото.";
         }
     };
     reader.readAsDataURL(selectedImageFile);
@@ -436,33 +476,48 @@ function updateAllUI() {
         const offset = circumference - (calPercent / 100) * circumference;
         ring.style.strokeDashoffset = offset;
     }
-    document.getElementById('calorieCurrent').innerText = totals.calories;
-    document.getElementById('calorieTarget').innerText = appData.settings.calorieGoal;
+    
+    const calorieCurrent = document.getElementById('calorieCurrent');
+    const calorieTarget = document.getElementById('calorieTarget');
+    if (calorieCurrent) calorieCurrent.innerText = totals.calories;
+    if (calorieTarget) calorieTarget.innerText = appData.settings.calorieGoal;
     
     // БЖУ
     const proteinPercent = Math.min((totals.protein / appData.settings.proteinGoal) * 100, 100);
     const fatsPercent = Math.min((totals.fats / appData.settings.fatsGoal) * 100, 100);
     const carbsPercent = Math.min((totals.carbs / appData.settings.carbsGoal) * 100, 100);
     
-    document.getElementById('proteinCurrent').innerText = totals.protein;
-    document.getElementById('proteinTarget').innerText = appData.settings.proteinGoal;
-    document.getElementById('proteinFill').style.width = proteinPercent + '%';
+    const proteinCurrent = document.getElementById('proteinCurrent');
+    const proteinTarget = document.getElementById('proteinTarget');
+    const proteinFill = document.getElementById('proteinFill');
+    if (proteinCurrent) proteinCurrent.innerText = totals.protein;
+    if (proteinTarget) proteinTarget.innerText = appData.settings.proteinGoal;
+    if (proteinFill) proteinFill.style.width = proteinPercent + '%';
     
-    document.getElementById('fatsCurrent').innerText = totals.fats;
-    document.getElementById('fatsTarget').innerText = appData.settings.fatsGoal;
-    document.getElementById('fatsFill').style.width = fatsPercent + '%';
+    const fatsCurrent = document.getElementById('fatsCurrent');
+    const fatsTarget = document.getElementById('fatsTarget');
+    const fatsFill = document.getElementById('fatsFill');
+    if (fatsCurrent) fatsCurrent.innerText = totals.fats;
+    if (fatsTarget) fatsTarget.innerText = appData.settings.fatsGoal;
+    if (fatsFill) fatsFill.style.width = fatsPercent + '%';
     
-    document.getElementById('carbsCurrent').innerText = totals.carbs;
-    document.getElementById('carbsTarget').innerText = appData.settings.carbsGoal;
-    document.getElementById('carbsFill').style.width = carbsPercent + '%';
+    const carbsCurrent = document.getElementById('carbsCurrent');
+    const carbsTarget = document.getElementById('carbsTarget');
+    const carbsFill = document.getElementById('carbsFill');
+    if (carbsCurrent) carbsCurrent.innerText = totals.carbs;
+    if (carbsTarget) carbsTarget.innerText = appData.settings.carbsGoal;
+    if (carbsFill) carbsFill.style.width = carbsPercent + '%';
     
     // Вода
     const waterPercent = Math.min((appData.water.today / appData.settings.waterGoal) * 100, 100);
-    document.getElementById('waterCurrent').innerText = appData.water.today;
-    document.getElementById('waterTarget').innerText = appData.settings.waterGoal;
-    document.getElementById('waterFill').style.width = waterPercent + '%';
+    const waterCurrent = document.getElementById('waterCurrent');
+    const waterTarget = document.getElementById('waterTarget');
+    const waterFill = document.getElementById('waterFill');
+    if (waterCurrent) waterCurrent.innerText = appData.water.today;
+    if (waterTarget) waterTarget.innerText = appData.settings.waterGoal;
+    if (waterFill) waterFill.style.width = waterPercent + '%';
     
-    // История с кнопками редактирования и удаления
+    // История
     const historyList = document.getElementById('mealsHistoryList');
     const mealsCount = document.getElementById('mealsCount');
     if (historyList) {
@@ -498,13 +553,19 @@ function escapeHtml(str) {
 
 // ========== ИНИЦИАЛИЗАЦИЯ ОБРАБОТЧИКОВ ==========
 function initEventListeners() {
-    // Шестерёнка (НАСТРОЙКИ)
+    console.log('initEventListeners вызвана');
+    
+    // Шестерёнка (НАСТРОЙКИ) - ПРЯМОЕ НАЗНАЧЕНИЕ
     const settingsBtn = document.getElementById('settingsButton');
     if (settingsBtn) {
+        console.log('Кнопка настроек найдена, назначаю обработчик');
         settingsBtn.onclick = function(e) {
             e.preventDefault();
+            console.log('Клик по шестерёнке');
             openSettingsModal();
         };
+    } else {
+        console.error('Кнопка settingsButton НЕ найдена в DOM');
     }
     
     // Закрытие модалок через крестики
@@ -583,6 +644,7 @@ function initEventListeners() {
 
 // ========== ЗАПУСК ==========
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM загружен');
     loadData();
     initEventListeners();
 });
