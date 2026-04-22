@@ -21,6 +21,7 @@ let appData = {
 };
 
 let selectedImageFile = null;
+let currentEditingFoodId = null;
 
 // ========== ЗАГРУЗКА/СОХРАНЕНИЕ ==========
 function loadData() {
@@ -85,18 +86,85 @@ function addWater(ml) {
     updateAllUI();
 }
 
+function openEditWaterModal() {
+    const modal = document.getElementById('editWaterModal');
+    if (modal) {
+        document.getElementById('editWaterAmount').value = appData.water.today;
+        modal.style.display = 'flex';
+    }
+}
+
+function closeEditWaterModal() {
+    const modal = document.getElementById('editWaterModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function saveWaterEdit() {
+    const newAmount = parseInt(document.getElementById('editWaterAmount')?.value);
+    if (!isNaN(newAmount) && newAmount >= 0) {
+        appData.water.today = newAmount;
+        saveData();
+        updateAllUI();
+        closeEditWaterModal();
+    } else {
+        alert('Введите корректное значение');
+    }
+}
+
+function resetWater() {
+    if (confirm('Сбросить всю воду за сегодня?')) {
+        appData.water.today = 0;
+        saveData();
+        updateAllUI();
+        closeEditWaterModal();
+    }
+}
+
 // ========== ЕДА ==========
-function openAddFoodModal() {
+function openAddFoodModal(editId = null) {
     const modal = document.getElementById('addFoodModal');
+    const modalTitle = document.getElementById('foodModalTitle');
+    const confirmBtn = document.getElementById('confirmAddFoodBtn');
+    
+    if (editId) {
+        // Режим редактирования
+        const foodToEdit = appData.food.find(f => f.id === editId);
+        if (foodToEdit) {
+            currentEditingFoodId = editId;
+            document.getElementById('editingFoodId').value = editId;
+            document.getElementById('foodName').value = foodToEdit.name;
+            document.getElementById('foodCal').value = foodToEdit.calories;
+            document.getElementById('foodProt').value = foodToEdit.protein || 0;
+            document.getElementById('foodFat').value = foodToEdit.fats || 0;
+            document.getElementById('foodCarb').value = foodToEdit.carbs || 0;
+            document.getElementById('foodMealType').value = foodToEdit.mealType || 'snack';
+            modalTitle.innerHTML = '✏️ Редактировать еду';
+            confirmBtn.innerHTML = '💾 Сохранить изменения';
+        }
+    } else {
+        // Режим добавления
+        currentEditingFoodId = null;
+        document.getElementById('editingFoodId').value = '';
+        document.getElementById('foodName').value = '';
+        document.getElementById('foodCal').value = '';
+        document.getElementById('foodProt').value = '';
+        document.getElementById('foodFat').value = '';
+        document.getElementById('foodCarb').value = '';
+        document.getElementById('foodMealType').value = 'snack';
+        modalTitle.innerHTML = '🍽️ Добавить еду';
+        confirmBtn.innerHTML = 'Добавить';
+    }
+    
     if (modal) modal.style.display = 'flex';
 }
 
 function closeAddFoodModal() {
     const modal = document.getElementById('addFoodModal');
     if (modal) modal.style.display = 'none';
+    currentEditingFoodId = null;
 }
 
-function addFood() {
+function saveFood() {
     const name = document.getElementById('foodName')?.value;
     const cal = parseInt(document.getElementById('foodCal')?.value);
     const prot = parseInt(document.getElementById('foodProt')?.value) || 0;
@@ -109,33 +177,53 @@ function addFood() {
         return;
     }
     
-    appData.food.push({
-        id: Date.now(),
-        name,
-        calories: cal,
-        protein: prot,
-        fats: fat,
-        carbs: carb,
-        mealType,
-        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-        date: new Date().toDateString()
-    });
+    const editingId = document.getElementById('editingFoodId')?.value;
+    
+    if (editingId) {
+        // Редактирование существующей записи
+        const index = appData.food.findIndex(f => f.id == editingId);
+        if (index !== -1) {
+            appData.food[index] = {
+                ...appData.food[index],
+                name: name,
+                calories: cal,
+                protein: prot,
+                fats: fat,
+                carbs: carb,
+                mealType: mealType,
+                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+            };
+        }
+    } else {
+        // Добавление новой записи
+        appData.food.push({
+            id: Date.now(),
+            name: name,
+            calories: cal,
+            protein: prot,
+            fats: fat,
+            carbs: carb,
+            mealType: mealType,
+            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+            date: new Date().toDateString()
+        });
+    }
     
     saveData();
     updateAllUI();
     closeAddFoodModal();
-    
-    document.getElementById('foodName').value = '';
-    document.getElementById('foodCal').value = '';
-    document.getElementById('foodProt').value = '';
-    document.getElementById('foodFat').value = '';
-    document.getElementById('foodCarb').value = '';
 }
 
 function deleteFood(id) {
-    appData.food = appData.food.filter(f => f.id !== id);
-    saveData();
-    updateAllUI();
+    if (confirm('Удалить этот приём пищи?')) {
+        appData.food = appData.food.filter(f => f.id !== id);
+        saveData();
+        updateAllUI();
+    }
+}
+
+function editFood(id) {
+    openAddFoodModal(id);
 }
 
 // ========== НАСТРОЙКИ ==========
@@ -374,19 +462,20 @@ function updateAllUI() {
     document.getElementById('waterTarget').innerText = appData.settings.waterGoal;
     document.getElementById('waterFill').style.width = waterPercent + '%';
     
-    // История
+    // История с кнопками редактирования и удаления
     const historyList = document.getElementById('mealsHistoryList');
     const mealsCount = document.getElementById('mealsCount');
     if (historyList) {
         historyList.innerHTML = todayFood.map(f => `
             <div class="history-item">
                 <div class="history-item-info">
-                    <div class="history-item-name">${f.name}</div>
+                    <div class="history-item-name">${escapeHtml(f.name)}</div>
                     <div class="history-item-details">${f.time} • ${f.mealType === 'breakfast' ? '🍳 Завтрак' : f.mealType === 'lunch' ? '🥗 Обед' : f.mealType === 'dinner' ? '🍲 Ужин' : '🍎 Перекус'}</div>
+                    <div class="history-item-macros">🔥${f.calories}ккал 🥩${f.protein}г 🧈${f.fats}г 🍚${f.carbs}г</div>
                 </div>
-                <div style="display:flex; align-items:center;">
-                    <div class="history-item-calories">${f.calories} ккал</div>
-                    <button class="delete-history-btn" onclick="deleteFood(${f.id})">✖</button>
+                <div style="display:flex; gap:8px;">
+                    <button class="edit-history-btn" onclick="editFood(${f.id})">✏️</button>
+                    <button class="delete-history-btn" onclick="deleteFood(${f.id})">🗑️</button>
                 </div>
             </div>
         `).join('');
@@ -397,11 +486,26 @@ function updateAllUI() {
     }
 }
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
 // ========== ИНИЦИАЛИЗАЦИЯ ОБРАБОТЧИКОВ ==========
 function initEventListeners() {
-    // Шестерёнка
+    // Шестерёнка (НАСТРОЙКИ)
     const settingsBtn = document.getElementById('settingsButton');
-    if (settingsBtn) settingsBtn.onclick = openSettingsModal;
+    if (settingsBtn) {
+        settingsBtn.onclick = function(e) {
+            e.preventDefault();
+            openSettingsModal();
+        };
+    }
     
     // Закрытие модалок через крестики
     const closeSettings = document.getElementById('closeSettingsModal');
@@ -413,13 +517,16 @@ function initEventListeners() {
     const closeAI = document.getElementById('closeAIModal');
     if (closeAI) closeAI.onclick = closeAIModal;
     
+    const closeEditWater = document.getElementById('closeEditWaterModal');
+    if (closeEditWater) closeEditWater.onclick = closeEditWaterModal;
+    
     // Кнопка добавления еды
     const addFoodMain = document.getElementById('addFoodMainBtn');
-    if (addFoodMain) addFoodMain.onclick = openAddFoodModal;
+    if (addFoodMain) addFoodMain.onclick = function() { openAddFoodModal(); };
     
-    // Подтверждение добавления еды
+    // Подтверждение добавления/редактирования еды
     const confirmAdd = document.getElementById('confirmAddFoodBtn');
-    if (confirmAdd) confirmAdd.onclick = addFood;
+    if (confirmAdd) confirmAdd.onclick = saveFood;
     
     // Сохранение настроек
     const saveSettings = document.getElementById('saveSettingsBtn');
@@ -449,14 +556,28 @@ function initEventListeners() {
         };
     });
     
+    // Кнопка редактирования воды
+    const editWaterBtn = document.getElementById('editWaterBtn');
+    if (editWaterBtn) editWaterBtn.onclick = openEditWaterModal;
+    
+    // Сохранение редактирования воды
+    const saveWaterBtn = document.getElementById('saveWaterBtn');
+    if (saveWaterBtn) saveWaterBtn.onclick = saveWaterEdit;
+    
+    // Сброс воды
+    const resetWaterBtn = document.getElementById('resetWaterBtn');
+    if (resetWaterBtn) resetWaterBtn.onclick = resetWater;
+    
     // Закрытие по клику вне модалки
     window.onclick = function(event) {
         const settingsModal = document.getElementById('settingsModal');
         const addFoodModal = document.getElementById('addFoodModal');
         const aiModal = document.getElementById('aiModal');
+        const editWaterModal = document.getElementById('editWaterModal');
         if (event.target === settingsModal) closeSettingsModal();
         if (event.target === addFoodModal) closeAddFoodModal();
         if (event.target === aiModal) closeAIModal();
+        if (event.target === editWaterModal) closeEditWaterModal();
     };
 }
 
