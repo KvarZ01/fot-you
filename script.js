@@ -77,6 +77,67 @@ function recalculateCaloriesFromProfile() {
     saveData();
 }
 
+// ========== ВОДА ==========
+function addWater(ml) {
+    if (isNaN(ml) || ml <= 0) return;
+    appData.water.today += ml;
+    saveData();
+    updateAllUI();
+}
+
+// ========== ЕДА ==========
+function openAddFoodModal() {
+    const modal = document.getElementById('addFoodModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeAddFoodModal() {
+    const modal = document.getElementById('addFoodModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function addFood() {
+    const name = document.getElementById('foodName')?.value;
+    const cal = parseInt(document.getElementById('foodCal')?.value);
+    const prot = parseInt(document.getElementById('foodProt')?.value) || 0;
+    const fat = parseInt(document.getElementById('foodFat')?.value) || 0;
+    const carb = parseInt(document.getElementById('foodCarb')?.value) || 0;
+    const mealType = document.getElementById('foodMealType')?.value;
+    
+    if (!name || isNaN(cal)) {
+        alert('Заполните название и калории');
+        return;
+    }
+    
+    appData.food.push({
+        id: Date.now(),
+        name,
+        calories: cal,
+        protein: prot,
+        fats: fat,
+        carbs: carb,
+        mealType,
+        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        date: new Date().toDateString()
+    });
+    
+    saveData();
+    updateAllUI();
+    closeAddFoodModal();
+    
+    document.getElementById('foodName').value = '';
+    document.getElementById('foodCal').value = '';
+    document.getElementById('foodProt').value = '';
+    document.getElementById('foodFat').value = '';
+    document.getElementById('foodCarb').value = '';
+}
+
+function deleteFood(id) {
+    appData.food = appData.food.filter(f => f.id !== id);
+    saveData();
+    updateAllUI();
+}
+
 // ========== НАСТРОЙКИ ==========
 function openSettingsModal() {
     const modal = document.getElementById('settingsModal');
@@ -131,68 +192,6 @@ function saveAllSettings() {
     saveData();
     updateAllUI();
     closeSettingsModal();
-}
-
-// ========== ВОДА ==========
-function addWater(ml) {
-    if (isNaN(ml) || ml <= 0) return;
-    appData.water.today += ml;
-    saveData();
-    updateAllUI();
-}
-
-// ========== ЕДА ==========
-function openAddFoodModal() {
-    const modal = document.getElementById('addFoodModal');
-    if (modal) modal.style.display = 'flex';
-}
-
-function closeAddFoodModal() {
-    const modal = document.getElementById('addFoodModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function addFood() {
-    const name = document.getElementById('foodName')?.value;
-    const cal = parseInt(document.getElementById('foodCal')?.value);
-    const prot = parseInt(document.getElementById('foodProt')?.value) || 0;
-    const fat = parseInt(document.getElementById('foodFat')?.value) || 0;
-    const carb = parseInt(document.getElementById('foodCarb')?.value) || 0;
-    const mealType = document.getElementById('foodMealType')?.value;
-    
-    if (!name || isNaN(cal)) {
-        alert('Заполните название и калории');
-        return;
-    }
-    
-    appData.food.push({
-        id: Date.now(),
-        name,
-        calories: cal,
-        protein: prot,
-        fats: fat,
-        carbs: carb,
-        mealType,
-        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-        date: new Date().toDateString()
-    });
-    
-    saveData();
-    updateAllUI();
-    closeAddFoodModal();
-    
-    // Очистка формы
-    document.getElementById('foodName').value = '';
-    document.getElementById('foodCal').value = '';
-    document.getElementById('foodProt').value = '';
-    document.getElementById('foodFat').value = '';
-    document.getElementById('foodCarb').value = '';
-}
-
-function deleteFood(id) {
-    appData.food = appData.food.filter(f => f.id !== id);
-    saveData();
-    updateAllUI();
 }
 
 // ========== ИИ АНАЛИЗ ==========
@@ -295,8 +294,15 @@ async function analyzeFoodWithAI() {
                 <strong>🤖 ИИ определил:</strong><br>
                 🍲 ${result.name || "Блюдо"}<br>
                 🔥 ${result.calories || 0} ккал | 🥩 ${result.protein || 0}г | 🧈 ${result.fats || 0}г | 🍚 ${result.carbs || 0}г
-                <button onclick="quickAddFromAI('${result.name || "Блюдо"}', ${result.calories || 0}, ${result.protein || 0}, ${result.fats || 0}, ${result.carbs || 0})" style="margin-top:12px; background:#ff3b30; border:none; padding:10px 20px; border-radius:30px; color:white; font-weight:600; cursor:pointer;">✅ Добавить в дневник</button>
+                <button id="quickAddFromAIBtn" style="margin-top:12px; background:#ff3b30; border:none; padding:10px 20px; border-radius:30px; color:white; font-weight:600; cursor:pointer;">✅ Добавить в дневник</button>
             `;
+            
+            const quickBtn = document.getElementById('quickAddFromAIBtn');
+            if (quickBtn) {
+                quickBtn.onclick = function() {
+                    quickAddFromAI(result.name || "Блюдо", result.calories || 0, result.protein || 0, result.fats || 0, result.carbs || 0);
+                };
+            }
         } catch(e) {
             resultDiv.innerHTML = "❌ Ошибка анализа. Попробуйте другое фото.";
         }
@@ -326,7 +332,6 @@ function updateAllUI() {
     const today = new Date().toDateString();
     const todayFood = appData.food.filter(f => f.date === today);
     
-    // Суммарные значения
     const totals = todayFood.reduce((acc, f) => {
         acc.calories += f.calories;
         acc.protein += f.protein || 0;
@@ -346,7 +351,7 @@ function updateAllUI() {
     document.getElementById('calorieCurrent').innerText = totals.calories;
     document.getElementById('calorieTarget').innerText = appData.settings.calorieGoal;
     
-    // БЖУ полоски
+    // БЖУ
     const proteinPercent = Math.min((totals.protein / appData.settings.proteinGoal) * 100, 100);
     const fatsPercent = Math.min((totals.fats / appData.settings.fatsGoal) * 100, 100);
     const carbsPercent = Math.min((totals.carbs / appData.settings.carbsGoal) * 100, 100);
@@ -369,7 +374,7 @@ function updateAllUI() {
     document.getElementById('waterTarget').innerText = appData.settings.waterGoal;
     document.getElementById('waterFill').style.width = waterPercent + '%';
     
-    // История приёмов пищи
+    // История
     const historyList = document.getElementById('mealsHistoryList');
     const mealsCount = document.getElementById('mealsCount');
     if (historyList) {
@@ -392,15 +397,71 @@ function updateAllUI() {
     }
 }
 
-// Закрытие модалок по клику вне
-window.onclick = function(event) {
-    const settingsModal = document.getElementById('settingsModal');
-    const addFoodModal = document.getElementById('addFoodModal');
-    const aiModal = document.getElementById('aiModal');
-    if (event.target === settingsModal) closeSettingsModal();
-    if (event.target === addFoodModal) closeAddFoodModal();
-    if (event.target === aiModal) closeAIModal();
-};
+// ========== ИНИЦИАЛИЗАЦИЯ ОБРАБОТЧИКОВ ==========
+function initEventListeners() {
+    // Шестерёнка
+    const settingsBtn = document.getElementById('settingsButton');
+    if (settingsBtn) settingsBtn.onclick = openSettingsModal;
+    
+    // Закрытие модалок через крестики
+    const closeSettings = document.getElementById('closeSettingsModal');
+    if (closeSettings) closeSettings.onclick = closeSettingsModal;
+    
+    const closeAddFood = document.getElementById('closeAddFoodModal');
+    if (closeAddFood) closeAddFood.onclick = closeAddFoodModal;
+    
+    const closeAI = document.getElementById('closeAIModal');
+    if (closeAI) closeAI.onclick = closeAIModal;
+    
+    // Кнопка добавления еды
+    const addFoodMain = document.getElementById('addFoodMainBtn');
+    if (addFoodMain) addFoodMain.onclick = openAddFoodModal;
+    
+    // Подтверждение добавления еды
+    const confirmAdd = document.getElementById('confirmAddFoodBtn');
+    if (confirmAdd) confirmAdd.onclick = addFood;
+    
+    // Сохранение настроек
+    const saveSettings = document.getElementById('saveSettingsBtn');
+    if (saveSettings) saveSettings.onclick = saveAllSettings;
+    
+    // ИИ кнопка
+    const aiFab = document.getElementById('aiFabButton');
+    if (aiFab) aiFab.onclick = openAIModal;
+    
+    // Кнопки выбора фото
+    const galleryBtn = document.getElementById('galleryBtn');
+    if (galleryBtn) galleryBtn.onclick = selectImageFromGallery;
+    
+    const cameraBtn = document.getElementById('cameraBtn');
+    if (cameraBtn) cameraBtn.onclick = takePhoto;
+    
+    // Кнопка распознавания
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    if (analyzeBtn) analyzeBtn.onclick = analyzeFoodWithAI;
+    
+    // Кнопки воды
+    const waterBtns = document.querySelectorAll('[data-water]');
+    waterBtns.forEach(btn => {
+        btn.onclick = function() {
+            const ml = parseInt(this.getAttribute('data-water'));
+            addWater(ml);
+        };
+    });
+    
+    // Закрытие по клику вне модалки
+    window.onclick = function(event) {
+        const settingsModal = document.getElementById('settingsModal');
+        const addFoodModal = document.getElementById('addFoodModal');
+        const aiModal = document.getElementById('aiModal');
+        if (event.target === settingsModal) closeSettingsModal();
+        if (event.target === addFoodModal) closeAddFoodModal();
+        if (event.target === aiModal) closeAIModal();
+    };
+}
 
-// Инициализация
-loadData();
+// ========== ЗАПУСК ==========
+document.addEventListener('DOMContentLoaded', function() {
+    loadData();
+    initEventListeners();
+});
