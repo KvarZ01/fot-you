@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="app">
-        <!-- Шапка с шестерёнкой -->
+        <!-- ШАПКА С ШЕСТЕРЁНКОЙ -->
         <div class="app-header">
             <div class="logo-area">
                 <span class="logo-icon">🔥</span>
@@ -18,7 +18,7 @@
             <div class="settings-icon" id="settingsButton">⚙️</div>
         </div>
 
-        <!-- Основной контент -->
+        <!-- ОСНОВНОЙ КОНТЕНТ -->
         <div class="content">
             <!-- КОЛЬЦО КАЛОРИЙ -->
             <div class="calorie-ring-container">
@@ -204,41 +204,41 @@
                     <div class="param-group">
                         <label>🏃 Активность</label>
                         <select id="userActivity">
-                            <option value="1.2">Минимальная</option>
+                            <option value="1.2">Минимальная (сидячая работа)</option>
                             <option value="1.375">Низкая (1-3 тренировки)</option>
                             <option value="1.55">Средняя (3-5 тренировок)</option>
                             <option value="1.725">Высокая (6-7 тренировок)</option>
-                            <option value="1.9">Очень высокая</option>
+                            <option value="1.9">Очень высокая (проф. спорт)</option>
                         </select>
                     </div>
                     <div class="param-group">
                         <label>🎯 Цель</label>
                         <select id="userGoal">
-                            <option value="maintain">Поддержание</option>
-                            <option value="lose">Похудение (-500 ккал)</option>
-                            <option value="gain">Набор массы (+300 ккал)</option>
+                            <option value="maintain">Поддержание веса</option>
+                            <option value="lose">Похудение (-500 ккал/день)</option>
+                            <option value="gain">Набор массы (+300 ккал/день)</option>
                         </select>
                     </div>
                     <div class="param-divider"></div>
                     <div class="param-group">
-                        <label>🔥 Норма калорий</label>
-                        <input type="number" id="setCalorieGoalModal">
+                        <label>🔥 Дневная норма калорий</label>
+                        <input type="number" id="setCalorieGoalModal" placeholder="ккал">
                     </div>
                     <div class="param-group">
                         <label>🥩 Белки (г)</label>
-                        <input type="number" id="setProteinGoalModal">
+                        <input type="number" id="setProteinGoalModal" placeholder="г">
                     </div>
                     <div class="param-group">
                         <label>🧈 Жиры (г)</label>
-                        <input type="number" id="setFatsGoalModal">
+                        <input type="number" id="setFatsGoalModal" placeholder="г">
                     </div>
                     <div class="param-group">
                         <label>🍚 Углеводы (г)</label>
-                        <input type="number" id="setCarbsGoalModal">
+                        <input type="number" id="setCarbsGoalModal" placeholder="г">
                     </div>
                     <div class="param-group">
-                        <label>💧 Вода (мл)</label>
-                        <input type="number" id="setWaterGoalModal">
+                        <label>💧 Цель воды (мл)</label>
+                        <input type="number" id="setWaterGoalModal" placeholder="мл">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -247,7 +247,7 @@
             </div>
         </div>
 
-        <!-- История приёмов пищи -->
+        <!-- ИСТОРИЯ ПРИЁМОВ ПИЩИ -->
         <div class="history-section">
             <div class="history-header">
                 <span>📋 Сегодня</span>
