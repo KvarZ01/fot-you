@@ -75,6 +75,7 @@
                     <span class="water-icon">💧</span>
                     <span class="water-name">Вода</span>
                     <span class="water-values"><span id="waterCurrent">0</span> / <span id="waterTarget">2000</span> мл</span>
+                    <button class="edit-water-btn" id="editWaterBtn">✏️</button>
                 </div>
                 <div class="water-bar">
                     <div class="water-fill" id="waterFill" style="width: 0%"></div>
@@ -103,14 +104,15 @@
             <span class="ai-label">ИИ</span>
         </div>
 
-        <!-- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ ЕДЫ -->
+        <!-- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ/РЕДАКТИРОВАНИЯ ЕДЫ -->
         <div id="addFoodModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>🍽️ Добавить еду</h3>
+                    <h3 id="foodModalTitle">🍽️ Добавить еду</h3>
                     <span class="modal-close" id="closeAddFoodModal">&times;</span>
                 </div>
                 <div class="modal-body">
+                    <input type="hidden" id="editingFoodId" value="">
                     <input type="text" id="foodName" placeholder="Название блюда">
                     <input type="number" id="foodCal" placeholder="Калории">
                     <div class="macro-inputs-modal">
@@ -125,6 +127,24 @@
                         <option value="snack">🍎 Перекус</option>
                     </select>
                     <button class="add-btn-modal" id="confirmAddFoodBtn">Добавить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ВОДЫ -->
+        <div id="editWaterModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>💧 Редактировать воду</h3>
+                    <span class="modal-close" id="closeEditWaterModal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="param-group">
+                        <label>Текущее количество воды (мл)</label>
+                        <input type="number" id="editWaterAmount" placeholder="мл">
+                    </div>
+                    <button id="saveWaterBtn" class="save-water-btn">💾 Сохранить</button>
+                    <button id="resetWaterBtn" class="reset-water-btn">🗑️ Сбросить воду</button>
                 </div>
             </div>
         </div>
