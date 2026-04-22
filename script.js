@@ -1,4 +1,3 @@
-// ========== ГЛОБАЛЬНЫЕ ДАННЫЕ ==========
 let appData = {
     water: { today: 0 },
     food: [],
@@ -20,15 +19,10 @@ let appData = {
     }
 };
 
-let selectedImageFile = null;
-
-// ========== ЗАГРУЗКА/СОХРАНЕНИЕ ==========
 function loadData() {
     const saved = localStorage.getItem('calzenData');
     if (saved) {
         appData = JSON.parse(saved);
-    } else {
-        recalculateCaloriesFromProfile();
     }
     updateAllUI();
 }
@@ -37,47 +31,6 @@ function saveData() {
     localStorage.setItem('calzenData', JSON.stringify(appData));
 }
 
-// ========== РАСЧЁТ КАЛОРИЙ ==========
-function calculateBMR() {
-    const { weight, height, age, gender } = appData.userProfile;
-    if (!weight || !height || !age) return 2000;
-    if (gender === "male") {
-        return 88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age);
-    } else {
-        return 447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age);
-    }
-}
-
-function recalculateCaloriesFromProfile() {
-    const bmr = calculateBMR();
-    const activity = parseFloat(appData.userProfile.activity);
-    let tdee = bmr * activity;
-    
-    if (appData.userProfile.goal === "lose") {
-        tdee -= 500;
-    } else if (appData.userProfile.goal === "gain") {
-        tdee += 300;
-    }
-    
-    tdee = Math.max(1200, Math.round(tdee));
-    
-    const proteinGoal = Math.round((tdee * 0.3) / 4);
-    const fatsGoal = Math.round((tdee * 0.25) / 9);
-    const carbsGoal = Math.round((tdee * 0.45) / 4);
-    
-    appData.settings.calorieGoal = tdee;
-    appData.settings.proteinGoal = proteinGoal;
-    appData.settings.fatsGoal = fatsGoal;
-    appData.settings.carbsGoal = carbsGoal;
-    
-    if (appData.userProfile.weight) {
-        appData.settings.waterGoal = Math.round(appData.userProfile.weight * 33);
-    }
-    
-    saveData();
-}
-
-// ========== ВОДА ==========
 function addWater(ml) {
     if (isNaN(ml) || ml <= 0) return;
     appData.water.today += ml;
@@ -85,80 +38,7 @@ function addWater(ml) {
     updateAllUI();
 }
 
-function openEditWaterModal() {
-    const modal = document.getElementById('editWaterModal');
-    if (modal) {
-        document.getElementById('editWaterAmount').value = appData.water.today;
-        modal.style.display = 'flex';
-    }
-}
-
-function closeEditWaterModal() {
-    const modal = document.getElementById('editWaterModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function saveWaterEdit() {
-    const newAmount = parseInt(document.getElementById('editWaterAmount').value);
-    if (!isNaN(newAmount) && newAmount >= 0) {
-        appData.water.today = newAmount;
-        saveData();
-        updateAllUI();
-        closeEditWaterModal();
-    } else {
-        alert('Введите корректное значение');
-    }
-}
-
-function resetWater() {
-    if (confirm('Сбросить всю воду за сегодня?')) {
-        appData.water.today = 0;
-        saveData();
-        updateAllUI();
-        closeEditWaterModal();
-    }
-}
-
-// ========== ЕДА ==========
-function openAddFoodModal(editId = null) {
-    const modal = document.getElementById('addFoodModal');
-    const modalTitle = document.getElementById('foodModalTitle');
-    const confirmBtn = document.getElementById('confirmAddFoodBtn');
-    
-    if (editId) {
-        const foodToEdit = appData.food.find(f => f.id === editId);
-        if (foodToEdit) {
-            document.getElementById('editingFoodId').value = editId;
-            document.getElementById('foodName').value = foodToEdit.name;
-            document.getElementById('foodCal').value = foodToEdit.calories;
-            document.getElementById('foodProt').value = foodToEdit.protein || 0;
-            document.getElementById('foodFat').value = foodToEdit.fats || 0;
-            document.getElementById('foodCarb').value = foodToEdit.carbs || 0;
-            document.getElementById('foodMealType').value = foodToEdit.mealType || 'snack';
-            if (modalTitle) modalTitle.innerHTML = '✏️ Редактировать еду';
-            if (confirmBtn) confirmBtn.innerHTML = 'Сохранить изменения';
-        }
-    } else {
-        document.getElementById('editingFoodId').value = '';
-        document.getElementById('foodName').value = '';
-        document.getElementById('foodCal').value = '';
-        document.getElementById('foodProt').value = '';
-        document.getElementById('foodFat').value = '';
-        document.getElementById('foodCarb').value = '';
-        document.getElementById('foodMealType').value = 'snack';
-        if (modalTitle) modalTitle.innerHTML = 'Добавить еду';
-        if (confirmBtn) confirmBtn.innerHTML = 'Добавить';
-    }
-    
-    if (modal) modal.style.display = 'flex';
-}
-
-function closeAddFoodModal() {
-    const modal = document.getElementById('addFoodModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function saveFood() {
+function addFood() {
     const name = document.getElementById('foodName').value;
     const cal = parseInt(document.getElementById('foodCal').value);
     const prot = parseInt(document.getElementById('foodProt').value) || 0;
@@ -178,24 +58,14 @@ function saveFood() {
         if (index !== -1) {
             appData.food[index] = {
                 ...appData.food[index],
-                name: name,
-                calories: cal,
-                protein: prot,
-                fats: fat,
-                carbs: carb,
-                mealType: mealType,
+                name, calories: cal, protein: prot, fats: fat, carbs: carb, mealType,
                 time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
             };
         }
     } else {
         appData.food.push({
             id: Date.now(),
-            name: name,
-            calories: cal,
-            protein: prot,
-            fats: fat,
-            carbs: carb,
-            mealType: mealType,
+            name, calories: cal, protein: prot, fats: fat, carbs: carb, mealType,
             time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
             date: new Date().toDateString()
         });
@@ -203,11 +73,17 @@ function saveFood() {
     
     saveData();
     updateAllUI();
-    closeAddFoodModal();
+    document.getElementById('addFoodModal').style.display = 'none';
+    document.getElementById('foodName').value = '';
+    document.getElementById('foodCal').value = '';
+    document.getElementById('foodProt').value = '';
+    document.getElementById('foodFat').value = '';
+    document.getElementById('foodCarb').value = '';
+    document.getElementById('editingFoodId').value = '';
 }
 
 function deleteFood(id) {
-    if (confirm('Удалить этот приём пищи?')) {
+    if (confirm('Удалить?')) {
         appData.food = appData.food.filter(f => f.id !== id);
         saveData();
         updateAllUI();
@@ -215,10 +91,21 @@ function deleteFood(id) {
 }
 
 function editFood(id) {
-    openAddFoodModal(id);
+    const food = appData.food.find(f => f.id === id);
+    if (food) {
+        document.getElementById('editingFoodId').value = food.id;
+        document.getElementById('foodName').value = food.name;
+        document.getElementById('foodCal').value = food.calories;
+        document.getElementById('foodProt').value = food.protein || 0;
+        document.getElementById('foodFat').value = food.fats || 0;
+        document.getElementById('foodCarb').value = food.carbs || 0;
+        document.getElementById('foodMealType').value = food.mealType || 'snack';
+        document.getElementById('foodModalTitle').innerHTML = '✏️ Редактировать еду';
+        document.getElementById('confirmAddFoodBtn').innerHTML = 'Сохранить';
+        document.getElementById('addFoodModal').style.display = 'flex';
+    }
 }
 
-// ========== НАСТРОЙКИ ==========
 function openSettingsModal() {
     const modal = document.getElementById('settingsModal');
     if (modal) {
@@ -235,14 +122,11 @@ function openSettingsModal() {
         document.getElementById('setCarbsGoalModal').value = appData.settings.carbsGoal;
         document.getElementById('setWaterGoalModal').value = appData.settings.waterGoal;
         modal.style.display = 'flex';
-    } else {
-        console.error('settingsModal not found');
     }
 }
 
 function closeSettingsModal() {
-    const modal = document.getElementById('settingsModal');
-    if (modal) modal.style.display = 'none';
+    document.getElementById('settingsModal').style.display = 'none';
 }
 
 function saveAllSettings() {
@@ -254,160 +138,26 @@ function saveAllSettings() {
     appData.userProfile.activity = document.getElementById('userActivity').value;
     appData.userProfile.goal = document.getElementById('userGoal').value;
     
-    const manualCal = parseInt(document.getElementById('setCalorieGoalModal').value);
-    const manualProtein = parseInt(document.getElementById('setProteinGoalModal').value);
-    const manualFats = parseInt(document.getElementById('setFatsGoalModal').value);
-    const manualCarbs = parseInt(document.getElementById('setCarbsGoalModal').value);
-    const manualWater = parseInt(document.getElementById('setWaterGoalModal').value);
+    const cal = parseInt(document.getElementById('setCalorieGoalModal').value);
+    if (cal > 0) appData.settings.calorieGoal = cal;
     
-    if (manualCal && manualCal > 0) {
-        appData.settings.calorieGoal = manualCal;
-    } else {
-        recalculateCaloriesFromProfile();
-    }
+    const prot = parseInt(document.getElementById('setProteinGoalModal').value);
+    if (prot > 0) appData.settings.proteinGoal = prot;
     
-    if (manualProtein && manualProtein > 0) appData.settings.proteinGoal = manualProtein;
-    if (manualFats && manualFats > 0) appData.settings.fatsGoal = manualFats;
-    if (manualCarbs && manualCarbs > 0) appData.settings.carbsGoal = manualCarbs;
-    if (manualWater && manualWater > 0) appData.settings.waterGoal = manualWater;
+    const fat = parseInt(document.getElementById('setFatsGoalModal').value);
+    if (fat > 0) appData.settings.fatsGoal = fat;
+    
+    const carb = parseInt(document.getElementById('setCarbsGoalModal').value);
+    if (carb > 0) appData.settings.carbsGoal = carb;
+    
+    const water = parseInt(document.getElementById('setWaterGoalModal').value);
+    if (water > 0) appData.settings.waterGoal = water;
     
     saveData();
     updateAllUI();
     closeSettingsModal();
 }
 
-// ========== ИИ АНАЛИЗ ==========
-function openAIModal() {
-    const modal = document.getElementById('aiModal');
-    if (modal) {
-        document.getElementById('aiPreview').classList.add('hidden');
-        document.getElementById('aiResult').classList.add('hidden');
-        selectedImageFile = null;
-        modal.style.display = 'flex';
-    }
-}
-
-function closeAIModal() {
-    const modal = document.getElementById('aiModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function selectImageFromGallery() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            selectedImageFile = file;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                document.getElementById('aiPreviewImg').src = ev.target.result;
-                document.getElementById('aiPreview').classList.remove('hidden');
-                document.getElementById('aiResult').classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-    input.click();
-}
-
-function takePhoto() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            selectedImageFile = file;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                document.getElementById('aiPreviewImg').src = ev.target.result;
-                document.getElementById('aiPreview').classList.remove('hidden');
-                document.getElementById('aiResult').classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-    input.click();
-}
-
-async function analyzeFoodWithAI() {
-    if (!selectedImageFile) {
-        alert('Сначала выберите фото');
-        return;
-    }
-    
-    const resultDiv = document.getElementById('aiResult');
-    resultDiv.classList.remove('hidden');
-    resultDiv.innerHTML = 'ИИ анализирует блюдо...';
-    
-    const reader = new FileReader();
-    reader.onloadend = async function() {
-        const base64 = reader.result.split(',')[1];
-        
-        const apiKey = 'AIzaSyD3nF7kLmP9xR2vB5hJ8qW1eC4tY6uI0oP';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-        
-        const prompt = 'Ты эксперт по питанию. Проанализируй еду на фото. Ответь ТОЛЬКО в формате JSON: {"name":"название","calories":число,"protein":число,"fats":число,"carbs":число}. Если не видно еду - поставь "Не определено" и 0.';
-        
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: prompt },
-                            { inline_data: { mime_type: 'image/jpeg', data: base64 } }
-                        ]
-                    }]
-                })
-            });
-            const data = await response.json();
-            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-            const cleanText = text.replace(/```json|```/g, '').trim();
-            const result = JSON.parse(cleanText);
-            
-            resultDiv.innerHTML = `
-                <strong>🤖 ИИ определил:</strong><br>
-                🍲 ${result.name || 'Блюдо'}<br>
-                🔥 ${result.calories || 0} ккал | 🥩 ${result.protein || 0}г | 🧈 ${result.fats || 0}г | 🍚 ${result.carbs || 0}г
-                <button id="quickAddFromAIBtn" style="margin-top:12px; background:#ff3b30; border:none; padding:10px 20px; border-radius:30px; color:white; font-weight:600; cursor:pointer;">✅ Добавить в дневник</button>
-            `;
-            
-            const quickBtn = document.getElementById('quickAddFromAIBtn');
-            if (quickBtn) {
-                quickBtn.onclick = function() {
-                    quickAddFromAI(result.name || 'Блюдо', result.calories || 0, result.protein || 0, result.fats || 0, result.carbs || 0);
-                };
-            }
-        } catch(e) {
-            resultDiv.innerHTML = 'Ошибка анализа. Попробуйте другое фото.';
-        }
-    };
-    reader.readAsDataURL(selectedImageFile);
-}
-
-function quickAddFromAI(name, cal, prot, fat, carb) {
-    appData.food.push({
-        id: Date.now(),
-        name: name,
-        calories: cal,
-        protein: prot,
-        fats: fat,
-        carbs: carb,
-        mealType: 'snack',
-        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-        date: new Date().toDateString()
-    });
-    saveData();
-    updateAllUI();
-    closeAIModal();
-}
-
-// ========== ОБНОВЛЕНИЕ UI ==========
 function updateAllUI() {
     const today = new Date().toDateString();
     const todayFood = appData.food.filter(f => f.date === today);
@@ -420,19 +170,16 @@ function updateAllUI() {
         return acc;
     }, { calories: 0, protein: 0, fats: 0, carbs: 0 });
     
-    // Кольцо калорий
     const calPercent = Math.min((totals.calories / appData.settings.calorieGoal) * 100, 100);
     const ring = document.getElementById('calorieRingProgress');
     if (ring) {
         const circumference = 596.9;
-        const offset = circumference - (calPercent / 100) * circumference;
-        ring.style.strokeDashoffset = offset;
+        ring.style.strokeDashoffset = circumference - (calPercent / 100) * circumference;
     }
     
     document.getElementById('calorieCurrent').innerText = totals.calories;
     document.getElementById('calorieTarget').innerText = appData.settings.calorieGoal;
     
-    // БЖУ
     const proteinPercent = Math.min((totals.protein / appData.settings.proteinGoal) * 100, 100);
     const fatsPercent = Math.min((totals.fats / appData.settings.fatsGoal) * 100, 100);
     const carbsPercent = Math.min((totals.carbs / appData.settings.carbsGoal) * 100, 100);
@@ -449,22 +196,19 @@ function updateAllUI() {
     document.getElementById('carbsTarget').innerText = appData.settings.carbsGoal;
     document.getElementById('carbsFill').style.width = carbsPercent + '%';
     
-    // Вода
     const waterPercent = Math.min((appData.water.today / appData.settings.waterGoal) * 100, 100);
     document.getElementById('waterCurrent').innerText = appData.water.today;
     document.getElementById('waterTarget').innerText = appData.settings.waterGoal;
     document.getElementById('waterFill').style.width = waterPercent + '%';
     
-    // История
     const historyList = document.getElementById('mealsHistoryList');
-    const mealsCount = document.getElementById('mealsCount');
     if (historyList) {
         historyList.innerHTML = todayFood.map(f => `
             <div class="history-item">
                 <div class="history-item-info">
-                    <div class="history-item-name">${escapeHtml(f.name)}</div>
-                    <div class="history-item-details">${f.time} • ${f.mealType === 'breakfast' ? 'Завтрак' : f.mealType === 'lunch' ? 'Обед' : f.mealType === 'dinner' ? 'Ужин' : 'Перекус'}</div>
-                    <div class="history-item-macros">${f.calories}ккал ${f.protein}г белка ${f.fats}г жиров ${f.carbs}г углеводов</div>
+                    <div class="history-item-name">${f.name}</div>
+                    <div class="history-item-details">${f.time}</div>
+                    <div class="history-item-macros">${f.calories} ккал | белки ${f.protein}г | жиры ${f.fats}г | углеводы ${f.carbs}г</div>
                 </div>
                 <div style="display:flex; gap:8px;">
                     <button class="edit-history-btn" onclick="editFood(${f.id})">✏️</button>
@@ -473,64 +217,43 @@ function updateAllUI() {
             </div>
         `).join('');
         if (todayFood.length === 0) {
-            historyList.innerHTML = '<div style="color:#8e8e93; text-align:center; padding:20px;">Нет записей за сегодня</div>';
+            historyList.innerHTML = '<div style="color:#8e8e93; text-align:center; padding:20px;">Нет записей</div>';
         }
-        if (mealsCount) mealsCount.innerText = todayFood.length;
+        document.getElementById('mealsCount').innerText = todayFood.length;
     }
 }
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    });
-}
-
-// ========== ИНИЦИАЛИЗАЦИЯ ==========
-function initEventListeners() {
-    // Шестерёнка
-    const settingsBtn = document.getElementById('settingsButton');
-    if (settingsBtn) {
-        settingsBtn.onclick = openSettingsModal;
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    loadData();
     
-    // Закрытие модалок
-    document.getElementById('closeSettingsModal').onclick = closeSettingsModal;
-    document.getElementById('closeAddFoodModal').onclick = closeAddFoodModal;
-    document.getElementById('closeAIModal').onclick = closeAIModal;
-    document.getElementById('closeEditWaterModal').onclick = closeEditWaterModal;
-    
-    // Кнопки
-    document.getElementById('addFoodMainBtn').onclick = () => openAddFoodModal();
-    document.getElementById('confirmAddFoodBtn').onclick = saveFood;
+    document.getElementById('settingsButton').onclick = openSettingsModal;
+    document.getElementById('closeSettingsBtn').onclick = closeSettingsModal;
     document.getElementById('saveSettingsBtn').onclick = saveAllSettings;
-    document.getElementById('aiFabButton').onclick = openAIModal;
-    document.getElementById('galleryBtn').onclick = selectImageFromGallery;
-    document.getElementById('cameraBtn').onclick = takePhoto;
-    document.getElementById('analyzeBtn').onclick = analyzeFoodWithAI;
-    document.getElementById('editWaterBtn').onclick = openEditWaterModal;
-    document.getElementById('saveWaterBtn').onclick = saveWaterEdit;
-    document.getElementById('resetWaterBtn').onclick = resetWater;
     
-    // Кнопки воды
+    document.getElementById('addFoodMainBtn').onclick = function() {
+        document.getElementById('editingFoodId').value = '';
+        document.getElementById('foodName').value = '';
+        document.getElementById('foodCal').value = '';
+        document.getElementById('foodProt').value = '';
+        document.getElementById('foodFat').value = '';
+        document.getElementById('foodCarb').value = '';
+        document.getElementById('foodModalTitle').innerHTML = '🍽️ Добавить еду';
+        document.getElementById('confirmAddFoodBtn').innerHTML = 'Добавить';
+        document.getElementById('addFoodModal').style.display = 'flex';
+    };
+    document.getElementById('closeAddFoodBtn').onclick = function() {
+        document.getElementById('addFoodModal').style.display = 'none';
+    };
+    document.getElementById('confirmAddFoodBtn').onclick = addFood;
+    
     document.querySelectorAll('[data-water]').forEach(btn => {
         btn.onclick = () => addWater(parseInt(btn.getAttribute('data-water')));
     });
     
-    // Закрытие по клику вне модалки
     window.onclick = function(event) {
         if (event.target === document.getElementById('settingsModal')) closeSettingsModal();
-        if (event.target === document.getElementById('addFoodModal')) closeAddFoodModal();
-        if (event.target === document.getElementById('aiModal')) closeAIModal();
-        if (event.target === document.getElementById('editWaterModal')) closeEditWaterModal();
+        if (event.target === document.getElementById('addFoodModal')) {
+            document.getElementById('addFoodModal').style.display = 'none';
+        }
     };
-}
-
-// ========== ЗАПУСК ==========
-document.addEventListener('DOMContentLoaded', function() {
-    loadData();
-    initEventListeners();
 });
