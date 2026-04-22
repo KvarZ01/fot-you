@@ -15,12 +15,12 @@
                 <span class="logo-icon">🔥</span>
                 <span class="logo-text">Calzen</span>
             </div>
-            <div class="settings-icon" onclick="openSettingsModal()">⚙️</div>
+            <div class="settings-icon" id="settingsButton">⚙️</div>
         </div>
 
         <!-- Основной контент -->
         <div class="content">
-            <!-- КОЛЬЦО КАЛОРИЙ (ГЛАВНОЕ) -->
+            <!-- КОЛЬЦО КАЛОРИЙ -->
             <div class="calorie-ring-container">
                 <div class="calorie-ring">
                     <svg width="220" height="220" viewBox="0 0 220 220">
@@ -79,26 +79,26 @@
                 <div class="water-bar">
                     <div class="water-fill" id="waterFill" style="width: 0%"></div>
                 </div>
-                <div class="water-buttons">
-                    <button class="water-btn-small" onclick="addWater(50)">+50</button>
-                    <button class="water-btn-small" onclick="addWater(100)">+100</button>
-                    <button class="water-btn-small" onclick="addWater(150)">+150</button>
-                    <button class="water-btn-small" onclick="addWater(200)">+200</button>
-                    <button class="water-btn-small" onclick="addWater(250)">+250</button>
-                    <button class="water-btn-small" onclick="addWater(500)">+500</button>
+                <div class="water-buttons" id="waterButtonsContainer">
+                    <button class="water-btn-small" data-water="50">+50</button>
+                    <button class="water-btn-small" data-water="100">+100</button>
+                    <button class="water-btn-small" data-water="150">+150</button>
+                    <button class="water-btn-small" data-water="200">+200</button>
+                    <button class="water-btn-small" data-water="250">+250</button>
+                    <button class="water-btn-small" data-water="500">+500</button>
                 </div>
             </div>
 
             <!-- КНОПКА ДОБАВЛЕНИЯ ЕДЫ -->
             <div class="add-food-button">
-                <button class="add-food-main" onclick="openAddFoodModal()">
+                <button class="add-food-main" id="addFoodMainBtn">
                     <span>🍽️</span> Добавить приём пищи
                 </button>
             </div>
         </div>
 
-        <!-- КРУГЛАЯ ИИ-КНОПКА ВНИЗУ -->
-        <div class="ai-fab" onclick="openAIModal()">
+        <!-- КРУГЛАЯ ИИ-КНОПКА -->
+        <div class="ai-fab" id="aiFabButton">
             <span class="ai-icon">🤖</span>
             <span class="ai-label">ИИ</span>
         </div>
@@ -108,7 +108,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>🍽️ Добавить еду</h3>
-                    <span class="modal-close" onclick="closeAddFoodModal()">&times;</span>
+                    <span class="modal-close" id="closeAddFoodModal">&times;</span>
                 </div>
                 <div class="modal-body">
                     <input type="text" id="foodName" placeholder="Название блюда">
@@ -124,30 +124,26 @@
                         <option value="dinner">🍲 Ужин</option>
                         <option value="snack">🍎 Перекус</option>
                     </select>
-                    <button class="add-btn-modal" onclick="addFood()">Добавить</button>
+                    <button class="add-btn-modal" id="confirmAddFoodBtn">Добавить</button>
                 </div>
             </div>
         </div>
 
-        <!-- МОДАЛЬНОЕ ОКНО ИИ (ВЫБОР ФОТО ИЛИ КАМЕРА) -->
+        <!-- МОДАЛЬНОЕ ОКНО ИИ -->
         <div id="aiModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>🤖 ИИ анализ еды</h3>
-                    <span class="modal-close" onclick="closeAIModal()">&times;</span>
+                    <span class="modal-close" id="closeAIModal">&times;</span>
                 </div>
                 <div class="modal-body">
                     <div class="ai-options">
-                        <button class="ai-option-btn" onclick="selectImageFromGallery()">
-                            📸 Выбрать из галереи
-                        </button>
-                        <button class="ai-option-btn" onclick="takePhoto()">
-                            🎥 Сделать фото
-                        </button>
+                        <button class="ai-option-btn" id="galleryBtn">📸 Выбрать из галереи</button>
+                        <button class="ai-option-btn" id="cameraBtn">🎥 Сделать фото</button>
                     </div>
                     <div id="aiPreview" class="ai-preview hidden">
                         <img id="aiPreviewImg" src="">
-                        <button onclick="analyzeFoodWithAI()" class="analyze-btn">🔍 Распознать</button>
+                        <button id="analyzeBtn" class="analyze-btn">🔍 Распознать</button>
                     </div>
                     <div id="aiResult" class="ai-result hidden"></div>
                 </div>
@@ -159,7 +155,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>⚙️ Параметры</h3>
-                    <span class="modal-close" onclick="closeSettingsModal()">&times;</span>
+                    <span class="modal-close" id="closeSettingsModal">&times;</span>
                 </div>
                 <div class="modal-body">
                     <div class="param-group">
@@ -226,12 +222,12 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button onclick="saveAllSettings()">💾 Сохранить</button>
+                    <button id="saveSettingsBtn">💾 Сохранить</button>
                 </div>
             </div>
         </div>
 
-        <!-- История приёмов пищи (внизу) -->
+        <!-- История приёмов пищи -->
         <div class="history-section">
             <div class="history-header">
                 <span>📋 Сегодня</span>
