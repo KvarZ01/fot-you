@@ -2,176 +2,380 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Calzen Lite — Твой полный трекер</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Calzen — Трекер с ИИ</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK для Google/Apple авторизации -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 </head>
 <body>
     <div class="app">
-        <header>
-            <h1>💧 Calzen Lite</h1>
-            <p>Трекер воды • еды • веса • тренировок</p>
-        </header>
-
-        <!-- Навигация -->
-        <nav class="tabs">
-            <button class="tab-btn active" data-tab="dashboard">📊 Главная</button>
-            <button class="tab-btn" data-tab="water">💧 Вода</button>
-            <button class="tab-btn" data-tab="food">🍽️ Еда</button>
-            <button class="tab-btn" data-tab="weight">⚖️ Вес</button>
-            <button class="tab-btn" data-tab="workout">🏋️ Тренировки</button>
-            <button class="tab-btn" data-tab="habits">✅ Привычки</button>
-        </nav>
-
-        <!-- Вкладка: Дашборд -->
-        <div id="dashboard" class="tab-content active">
-            <div class="dashboard-grid">
-                <div class="dashboard-card water-card">
-                    <h3>💧 Вода сегодня</h3>
-                    <div class="big-number" id="todayWater">0</div>
-                    <div class="unit">мл</div>
-                    <div class="progress-bar"><div class="progress-fill" id="waterProgressFill" style="width: 0%"></div></div>
-                    <div class="target-text">Цель: <span id="waterGoal">2000</span> мл</div>
-                </div>
-                <div class="dashboard-card calories-card">
-                    <h3>🔥 Калории</h3>
-                    <div class="big-number" id="todayCalories">0</div>
-                    <div class="unit">из <span id="calorieGoal">2000</span></div>
-                    <div class="small-stats">🥩 Белок: <span id="todayProtein">0</span>г | 🧈 Жиры: <span id="todayFats">0</span>г | 🍚 Углеводы: <span id="todayCarbs">0</span>г</div>
-                </div>
-                <div class="dashboard-card weight-card">
-                    <h3>⚖️ Текущий вес</h3>
-                    <div class="big-number" id="currentWeight">—</div>
-                    <div class="unit">кг</div>
-                    <div class="trend" id="weightTrend"></div>
-                </div>
-                <div class="dashboard-card streak-card">
-                    <h3>🔥 Серия</h3>
-                    <div class="big-number" id="streakDays">0</div>
-                    <div class="unit">дней подряд</div>
-                </div>
+        <!-- Шапка с шестерёнкой -->
+        <div class="app-header">
+            <div class="logo-area">
+                <span class="logo-icon">💧</span>
+                <span class="logo-text">Calzen</span>
             </div>
-            <div class="quick-actions">
-                <button onclick="quickAddWater(250)">💧 +250 мл</button>
-                <button onclick="quickAddWater(500)">💧 +500 мл</button>
-                <button onclick="location.href='#'" data-tab="food">🍎 Добавить еду</button>
+            <div class="header-actions">
+                <div class="user-avatar" id="userAvatar" onclick="openProfileModal()">
+                    <span id="avatarInitials">👤</span>
+                </div>
+                <div class="settings-icon" onclick="openSettingsModal()">⚙️</div>
             </div>
         </div>
 
-        <!-- Вкладка: Вода -->
-        <div id="water" class="tab-content">
-            <div class="water-stats">
-                <div class="water-circle">
-                    <div class="water-percent" id="waterPercent">0%</div>
-                    <div class="water-amount"><span id="waterAmount">0</span> / <span id="waterTarget">2000</span> мл</div>
+        <!-- Основной контент -->
+        <div class="content">
+            <!-- Вкладка: Дашборд -->
+            <div id="dashboard" class="tab-page active">
+                <div class="greeting">
+                    <h1>Привет, <span id="userNameDisplay">Гость</span> 👋</h1>
+                    <p id="todayDate"></p>
+                </div>
+
+                <!-- Кольцевой прогресс воды -->
+                <div class="water-ring-container">
+                    <div class="water-ring">
+                        <svg width="180" height="180" viewBox="0 0 180 180">
+                            <circle cx="90" cy="90" r="80" fill="none" stroke="#1c1c1e" stroke-width="12"/>
+                            <circle id="waterRingProgress" cx="90" cy="90" r="80" fill="none" stroke="#0a84ff" stroke-width="12" stroke-dasharray="502.4" stroke-dashoffset="502.4" stroke-linecap="round" transform="rotate(-90 90 90)"/>
+                        </svg>
+                        <div class="water-ring-text">
+                            <div class="water-percent" id="waterPercent">0%</div>
+                            <div class="water-amount"><span id="todayWater">0</span> / <span id="waterGoal">2000</span> мл</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Карточки статистики -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="todayCalories">0</div>
+                            <div class="stat-label">ккал</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="streakDays">0</div>
+                            <div class="stat-label">дней подряд</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- БЖУ строка -->
+                <div class="macros-row">
+                    <div class="macro-item">
+                        <span class="macro-value" id="todayProtein">0</span>
+                        <span class="macro-label">Белки</span>
+                    </div>
+                    <div class="macro-item">
+                        <span class="macro-value" id="todayFats">0</span>
+                        <span class="macro-label">Жиры</span>
+                    </div>
+                    <div class="macro-item">
+                        <span class="macro-value" id="todayCarbs">0</span>
+                        <span class="macro-label">Углеводы</span>
+                    </div>
+                </div>
+
+                <!-- ИИ анализ еды -->
+                <div class="ai-section">
+                    <div class="section-header">
+                        <span>🤖 ИИ анализ еды</span>
+                        <span class="ai-badge">Gemini AI</span>
+                    </div>
+                    <div class="ai-upload">
+                        <input type="file" id="aiPhotoInput" accept="image/*" capture="environment">
+                        <button onclick="analyzeFoodWithAI()">📸 Распознать по фото</button>
+                    </div>
+                    <div id="aiResult" class="ai-result hidden"></div>
+                </div>
+
+                <!-- Приёмы пищи кратко -->
+                <div class="recent-meals">
+                    <div class="section-header">
+                        <span>🍽️ Сегодня</span>
+                        <button class="add-quick-btn" data-tab="food">+ Добавить</button>
+                    </div>
+                    <div id="recentMealsList"></div>
                 </div>
             </div>
-            <div class="water-buttons">
-                <button onclick="addWater(50)">50 мл</button>
-                <button onclick="addWater(100)">100 мл</button>
-                <button onclick="addWater(150)">150 мл</button>
-                <button onclick="addWater(200)">200 мл</button>
-                <button onclick="addWater(250)">250 мл</button>
-                <button onclick="addWater(500)">500 мл</button>
-            </div>
-            <div class="custom-water">
-                <input type="number" id="customWaterAmount" placeholder="Своё значение (мл)">
-                <button onclick="addWater(parseInt(document.getElementById('customWaterAmount').value))">➕ Добавить</button>
-            </div>
-            <div class="history-list" id="waterHistoryList">
-                <h4>История воды сегодня</h4>
-            </div>
-        </div>
 
-        <!-- Вкладка: Еда -->
-        <div id="food" class="tab-content">
-            <div class="food-summary">
-                <div class="food-stat">🔥 <span id="foodCalories">0</span> / <span id="foodCalGoal">2000</span> ккал</div>
-                <div class="food-stat">🥩 Белок: <span id="foodProtein">0</span>г</div>
-                <div class="food-stat">🧈 Жиры: <span id="foodFats">0</span>г</div>
-                <div class="food-stat">🍚 Углеводы: <span id="foodCarbs">0</span>г</div>
-            </div>
-            
-            <div class="food-add">
-                <h3>➕ Добавить приём пищи</h3>
-                <input type="text" id="foodName" placeholder="Название (например: Омлет)">
-                <input type="number" id="foodCal" placeholder="Калории">
-                <div class="macro-row">
-                    <input type="number" id="foodProt" placeholder="Белок (г)">
-                    <input type="number" id="foodFat" placeholder="Жиры (г)">
-                    <input type="number" id="foodCarb" placeholder="Углеводы (г)">
+            <!-- Вкладка: Вода -->
+            <div id="water" class="tab-page">
+                <div class="page-header">
+                    <h2>💧 Вода</h2>
                 </div>
-                <select id="foodMealType">
-                    <option value="breakfast">🍳 Завтрак</option>
-                    <option value="lunch">🥗 Обед</option>
-                    <option value="dinner">🍲 Ужин</option>
-                    <option value="snack">🍎 Перекус</option>
-                </select>
-                <button onclick="addFood()">Добавить</button>
+                <div class="water-progress-card">
+                    <div class="progress-value">
+                        <span id="waterAmountDetail">0</span>
+                        <span>мл из <span id="waterTargetDetail">2000</span> мл</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="waterProgressFillDetail" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="water-buttons-grid">
+                    <button class="water-btn" onclick="addWater(50)">50 мл</button>
+                    <button class="water-btn" onclick="addWater(100)">100 мл</button>
+                    <button class="water-btn" onclick="addWater(150)">150 мл</button>
+                    <button class="water-btn" onclick="addWater(200)">200 мл</button>
+                    <button class="water-btn" onclick="addWater(250)">250 мл</button>
+                    <button class="water-btn" onclick="addWater(500)">500 мл</button>
+                </div>
+                <div class="custom-input">
+                    <input type="number" id="customWater" placeholder="Своё значение (мл)">
+                    <button onclick="addWater(parseInt(document.getElementById('customWater').value))">Добавить</button>
+                </div>
+                <div class="history-section">
+                    <h3>История</h3>
+                    <div id="waterHistoryList"></div>
+                </div>
             </div>
 
-            <div class="food-history">
-                <h3>📋 Сегодня</h3>
-                <div id="foodList"></div>
+            <!-- Вкладка: Еда -->
+            <div id="food" class="tab-page">
+                <div class="page-header">
+                    <h2>🍽️ Еда</h2>
+                </div>
+                <div class="macros-summary">
+                    <div class="macro-card">
+                        <span class="macro-big" id="foodCalories">0</span>
+                        <span class="macro-big-label">ккал</span>
+                        <div class="macro-sub">из <span id="foodCalGoal">2000</span></div>
+                    </div>
+                    <div class="macro-card">
+                        <span class="macro-big" id="foodProtein">0</span>
+                        <span class="macro-big-label">белок</span>
+                    </div>
+                    <div class="macro-card">
+                        <span class="macro-big" id="foodFats">0</span>
+                        <span class="macro-big-label">жиры</span>
+                    </div>
+                    <div class="macro-card">
+                        <span class="macro-big" id="foodCarbs">0</span>
+                        <span class="macro-big-label">углеводы</span>
+                    </div>
+                </div>
+                <div class="add-food-form">
+                    <input type="text" id="foodName" placeholder="Название блюда">
+                    <div class="macro-inputs">
+                        <input type="number" id="foodCal" placeholder="ккал">
+                        <input type="number" id="foodProt" placeholder="Белки">
+                        <input type="number" id="foodFat" placeholder="Жиры">
+                        <input type="number" id="foodCarb" placeholder="Углеводы">
+                    </div>
+                    <select id="foodMealType">
+                        <option value="breakfast">🍳 Завтрак</option>
+                        <option value="lunch">🥗 Обед</option>
+                        <option value="dinner">🍲 Ужин</option>
+                        <option value="snack">🍎 Перекус</option>
+                    </select>
+                    <button class="add-btn" onclick="addFood()">Добавить</button>
+                </div>
+                <div class="meals-list" id="foodList"></div>
+            </div>
+
+            <!-- Вкладка: Вес -->
+            <div id="weight" class="tab-page">
+                <div class="page-header">
+                    <h2>⚖️ Вес</h2>
+                </div>
+                <div class="current-weight-card">
+                    <div class="current-weight-value" id="currentWeightDisplay">—</div>
+                    <div class="current-weight-label">текущий вес</div>
+                </div>
+                <div class="add-weight-form">
+                    <input type="number" id="weightValue" step="0.1" placeholder="Новый вес (кг)">
+                    <button onclick="addWeight()">Записать</button>
+                </div>
+                <div class="weight-chart-container">
+                    <canvas id="weightChart"></canvas>
+                </div>
+                <div class="weight-history" id="weightHistoryList"></div>
+            </div>
+
+            <!-- Вкладка: Тренировки -->
+            <div id="workout" class="tab-page">
+                <div class="page-header">
+                    <h2>🏋️ Тренировки</h2>
+                </div>
+                <div class="workout-stats-row">
+                    <div class="workout-stat">
+                        <span id="totalWorkouts">0</span>
+                        <span>тренировок</span>
+                    </div>
+                    <div class="workout-stat">
+                        <span id="totalMinutes">0</span>
+                        <span>минут</span>
+                    </div>
+                    <div class="workout-stat">
+                        <span id="totalBurned">0</span>
+                        <span>ккал 🔥</span>
+                    </div>
+                </div>
+                <div class="add-workout-form">
+                    <input type="text" id="workoutName" placeholder="Название">
+                    <input type="number" id="workoutMinutes" placeholder="Минуты">
+                    <input type="number" id="workoutCaloriesBurned" placeholder="Сожжено ккал">
+                    <button onclick="addWorkout()">Добавить</button>
+                </div>
+                <div class="workout-list" id="workoutList"></div>
+            </div>
+
+            <!-- Вкладка: Привычки -->
+            <div id="habits" class="tab-page">
+                <div class="page-header">
+                    <h2>✅ Привычки</h2>
+                </div>
+                <div class="add-habit-form">
+                    <input type="text" id="newHabit" placeholder="Новая привычка">
+                    <button onclick="addHabit()">Добавить</button>
+                </div>
+                <div class="habits-list" id="habitsList"></div>
             </div>
         </div>
 
-        <!-- Вкладка: Вес -->
-        <div id="weight" class="tab-content">
-            <div class="weight-add">
-                <h3>📝 Записать вес</h3>
-                <input type="number" id="weightValue" step="0.1" placeholder="Вес в кг">
-                <button onclick="addWeight()">Сохранить</button>
+        <!-- Таб-бар снизу -->
+        <div class="tab-bar">
+            <div class="tab-item active" data-tab="dashboard">
+                <div class="tab-icon">📊</div>
+                <div class="tab-label">Главная</div>
             </div>
-            <div class="weight-chart">
-                <canvas id="weightChart"></canvas>
+            <div class="tab-item" data-tab="water">
+                <div class="tab-icon">💧</div>
+                <div class="tab-label">Вода</div>
             </div>
-            <div class="weight-history" id="weightHistoryList"></div>
+            <div class="tab-item" data-tab="food">
+                <div class="tab-icon">🍽️</div>
+                <div class="tab-label">Еда</div>
+            </div>
+            <div class="tab-item" data-tab="weight">
+                <div class="tab-icon">⚖️</div>
+                <div class="tab-label">Вес</div>
+            </div>
+            <div class="tab-item" data-tab="workout">
+                <div class="tab-icon">🏋️</div>
+                <div class="tab-label">Тренир.</div>
+            </div>
+            <div class="tab-item" data-tab="habits">
+                <div class="tab-icon">✅</div>
+                <div class="tab-label">Привычки</div>
+            </div>
         </div>
+    </div>
 
-        <!-- Вкладка: Тренировки -->
-        <div id="workout" class="tab-content">
-            <div class="workout-add">
-                <h3>🏋️ Добавить тренировку</h3>
-                <input type="text" id="workoutName" placeholder="Название (Бег, Пресс, Йога)">
-                <input type="number" id="workoutMinutes" placeholder="Длительность (мин)">
-                <input type="number" id="workoutCaloriesBurned" placeholder="Сожжено калорий (опционально)">
-                <button onclick="addWorkout()">Добавить</button>
+    <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК (вес, рост, калории, БЖУ) -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Параметры</h3>
+                <span class="modal-close" onclick="closeSettingsModal()">&times;</span>
             </div>
-            <div class="workout-stats">
-                <div class="stat-card">🏃‍♂️ Всего тренировок: <span id="totalWorkouts">0</span></div>
-                <div class="stat-card">⏱️ Всего минут: <span id="totalMinutes">0</span></div>
-                <div class="stat-card">🔥 Сожжено калорий: <span id="totalBurned">0</span></div>
+            <div class="modal-body">
+                <div class="param-group">
+                    <label>👤 Ваше имя</label>
+                    <input type="text" id="userFullName" placeholder="Имя">
+                </div>
+                <div class="param-group">
+                    <label>⚖️ Вес (кг)</label>
+                    <input type="number" id="userWeight" step="0.1" placeholder="Вес">
+                </div>
+                <div class="param-group">
+                    <label>📏 Рост (см)</label>
+                    <input type="number" id="userHeight" placeholder="Рост">
+                </div>
+                <div class="param-group">
+                    <label>🎂 Возраст</label>
+                    <input type="number" id="userAge" placeholder="Возраст">
+                </div>
+                <div class="param-group">
+                    <label>⚧ Пол</label>
+                    <select id="userGender">
+                        <option value="male">Мужской</option>
+                        <option value="female">Женский</option>
+                    </select>
+                </div>
+                <div class="param-group">
+                    <label>🏃 Активность</label>
+                    <select id="userActivity">
+                        <option value="1.2">Минимальная (сидячая работа)</option>
+                        <option value="1.375">Низкая (1-3 тренировки)</option>
+                        <option value="1.55">Средняя (3-5 тренировок)</option>
+                        <option value="1.725">Высокая (6-7 тренировок)</option>
+                        <option value="1.9">Очень высокая (профессиональный спорт)</option>
+                    </select>
+                </div>
+                <div class="param-group">
+                    <label>🎯 Цель</label>
+                    <select id="userGoal">
+                        <option value="maintain">Поддержание веса</option>
+                        <option value="lose">Похудение</option>
+                        <option value="gain">Набор массы</option>
+                    </select>
+                </div>
+                <div class="param-divider"></div>
+                <div class="param-group">
+                    <label>🔥 Дневная норма калорий</label>
+                    <input type="number" id="setCalorieGoalModal" placeholder="Калории">
+                    <small class="hint" id="calculatedCaloriesHint">Рассчитается автоматически</small>
+                </div>
+                <div class="param-group">
+                    <label>🥩 Белки (г)</label>
+                    <input type="number" id="setProteinGoalModal" placeholder="Белки">
+                </div>
+                <div class="param-group">
+                    <label>🧈 Жиры (г)</label>
+                    <input type="number" id="setFatsGoalModal" placeholder="Жиры">
+                </div>
+                <div class="param-group">
+                    <label>🍚 Углеводы (г)</label>
+                    <input type="number" id="setCarbsGoalModal" placeholder="Углеводы">
+                </div>
+                <div class="param-group">
+                    <label>💧 Цель воды (мл)</label>
+                    <input type="number" id="setWaterGoalModal" placeholder="Вода">
+                </div>
             </div>
-            <div class="workout-history" id="workoutList"></div>
+            <div class="modal-footer">
+                <button onclick="saveAllSettings()">💾 Сохранить</button>
+            </div>
         </div>
+    </div>
 
-        <!-- Вкладка: Привычки -->
-        <div id="habits" class="tab-content">
-            <div class="habits-add">
-                <input type="text" id="newHabit" placeholder="Новая привычка (например: Выпить стакан воды утром)">
-                <button onclick="addHabit()">➕ Добавить привычку</button>
+    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ (авторизация) -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👤 Профиль</h3>
+                <span class="modal-close" onclick="closeProfileModal()">&times;</span>
             </div>
-            <div class="habits-list" id="habitsList"></div>
-        </div>
-
-        <!-- Настройки -->
-        <div class="settings-panel">
-            <h3>⚙️ Настройки целей</h3>
-            <div class="settings-grid">
-                <div><label>💧 Вода (мл):</label><input type="number" id="setWaterGoal" value="2000"></div>
-                <div><label>🔥 Калории:</label><input type="number" id="setCalorieGoal" value="2000"></div>
-                <div><label>🥩 Белок (г):</label><input type="number" id="setProteinGoal" value="150"></div>
-                <div><label>⚖️ Целевой вес:</label><input type="number" id="setTargetWeight" step="0.1" value="70"></div>
+            <div class="modal-body">
+                <div id="authState">
+                    <div id="unauthedView" class="auth-buttons">
+                        <button class="google-btn" onclick="signInWithGoogle()">🔐 Войти через Google</button>
+                        <button class="apple-btn" onclick="signInWithApple()">🍎 Войти через Apple</button>
+                        <div class="guest-note">Или оставайтесь гостем — данные сохранятся локально</div>
+                    </div>
+                    <div id="authedView" style="display:none;">
+                        <div class="user-info">
+                            <div class="user-avatar-large" id="profileAvatar">👤</div>
+                            <div class="user-email" id="userEmail"></div>
+                            <button class="logout-btn" onclick="signOut()">Выйти</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button onclick="saveSettings()">💾 Сохранить цели</button>
-            <button onclick="exportData()" class="secondary">📤 Экспорт данных</button>
-            <button onclick="importData()" class="secondary">📥 Импорт данных</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
