@@ -21,7 +21,6 @@ body {
     padding-bottom: 20px;
 }
 
-/* Шапка */
 .app-header {
     display: flex;
     justify-content: space-between;
@@ -58,20 +57,14 @@ body {
     cursor: pointer;
     opacity: 0.7;
     transition: 0.2s;
+    padding: 8px;
 }
 
-.settings-icon:hover {
-    opacity: 1;
-    transform: rotate(30deg);
-}
-
-/* Контент */
 .content {
     flex: 1;
     padding: 20px 20px 100px 20px;
 }
 
-/* КОЛЬЦО КАЛОРИЙ */
 .calorie-ring-container {
     display: flex;
     justify-content: center;
@@ -111,7 +104,6 @@ body {
     margin-top: 6px;
 }
 
-/* БЖУ ПОЛОСКИ */
 .macros-container {
     margin-bottom: 24px;
 }
@@ -138,7 +130,6 @@ body {
     flex: 1;
     font-size: 14px;
     font-weight: 500;
-    color: #ffffff;
 }
 
 .macro-values {
@@ -164,7 +155,6 @@ body {
 .fats-fill { background: #ff9f0a; }
 .carbs-fill { background: #30d158; }
 
-/* ВОДА ПОЛОСКА */
 .water-container {
     background: #1c1c1e;
     border-radius: 20px;
@@ -239,11 +229,6 @@ body {
     margin-left: auto;
 }
 
-.edit-water-btn:hover {
-    background: #3a3a3c;
-}
-
-/* Кнопка добавления еды */
 .add-food-button {
     margin-bottom: 20px;
 }
@@ -257,14 +242,9 @@ body {
     color: white;
     font-weight: 700;
     font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
     cursor: pointer;
 }
 
-/* КРУГЛАЯ ИИ-КНОПКА */
 .ai-fab {
     position: fixed;
     bottom: 100px;
@@ -274,29 +254,14 @@ body {
     background: linear-gradient(135deg, #0a84ff, #5e5ce0);
     border-radius: 30px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+    font-size: 28px;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(10,132,255,0.4);
     z-index: 20;
-    transition: transform 0.2s;
 }
 
-.ai-fab:hover {
-    transform: scale(1.05);
-}
-
-.ai-icon {
-    font-size: 28px;
-}
-
-.ai-label {
-    font-size: 10px;
-    font-weight: 600;
-}
-
-/* История */
 .history-section {
     padding: 0 20px 20px 20px;
 }
@@ -373,219 +338,4 @@ body {
     color: white;
     font-size: 12px;
     cursor: pointer;
-}
-
-/* МОДАЛЬНЫЕ ОКНА */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(12px);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-content {
-    background: #1c1c1e;
-    border-radius: 28px;
-    width: 90%;
-    max-width: 380px;
-    max-height: 85vh;
-    overflow-y: auto;
-    animation: modalSlideIn 0.3s ease;
-}
-
-@keyframes modalSlideIn {
-    from { transform: translateY(50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 20px;
-    border-bottom: 0.5px solid #2c2c2e;
-}
-
-.modal-header h3 {
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.modal-close {
-    font-size: 28px;
-    cursor: pointer;
-    color: #8e8e93;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
-.modal-footer {
-    padding: 16px 20px;
-    border-top: 0.5px solid #2c2c2e;
-}
-
-.modal-footer button {
-    width: 100%;
-    background: #0a84ff;
-    border: none;
-    padding: 14px;
-    border-radius: 14px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.param-group {
-    margin-bottom: 16px;
-}
-
-.param-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 6px;
-    color: #8e8e93;
-}
-
-.param-group input, .param-group select {
-    width: 100%;
-    background: #2c2c2e;
-    border: none;
-    padding: 12px;
-    border-radius: 12px;
-    color: white;
-    font-size: 15px;
-}
-
-.param-divider {
-    height: 1px;
-    background: #2c2c2e;
-    margin: 20px 0;
-}
-
-.macro-inputs-modal {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin: 12px 0;
-}
-
-.macro-inputs-modal input {
-    background: #2c2c2e;
-    border: none;
-    padding: 12px;
-    border-radius: 12px;
-    color: white;
-    text-align: center;
-}
-
-#addFoodModal input, #addFoodModal select {
-    width: 100%;
-    background: #2c2c2e;
-    border: none;
-    padding: 12px;
-    border-radius: 12px;
-    color: white;
-    margin-bottom: 12px;
-}
-
-.add-btn-modal {
-    width: 100%;
-    background: #ff3b30;
-    border: none;
-    padding: 14px;
-    border-radius: 14px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 12px;
-}
-
-/* ИИ опции */
-.ai-options {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.ai-option-btn {
-    flex: 1;
-    background: #2c2c2e;
-    border: none;
-    padding: 14px;
-    border-radius: 16px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.ai-preview {
-    text-align: center;
-    margin-bottom: 16px;
-}
-
-.ai-preview img {
-    max-width: 100%;
-    border-radius: 20px;
-    margin-bottom: 12px;
-}
-
-.analyze-btn {
-    background: #0a84ff;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 30px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.ai-result {
-    background: #2c2c2e;
-    border-radius: 16px;
-    padding: 16px;
-    margin-top: 16px;
-    font-size: 14px;
-}
-
-.save-water-btn {
-    width: 100%;
-    background: #0a84ff;
-    border: none;
-    padding: 14px;
-    border-radius: 14px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 10px;
-}
-
-.reset-water-btn {
-    width: 100%;
-    background: #ff3b30;
-    border: none;
-    padding: 14px;
-    border-radius: 14px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.hidden {
-    display: none;
-}
-
-/* Скролл */
-::-webkit-scrollbar {
-    width: 0;
-    background: transparent;
 }
